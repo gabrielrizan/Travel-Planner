@@ -1,4 +1,5 @@
-TRAVEl PLANNER
+
+TRAVEL PLANNER
 
 TEAM NAME - FINESSERS
 
@@ -14,6 +15,7 @@ SOME OF THE FEATURES INCLUDE:
 - Budget Tracking: Tools for setting and monitoring trip budgets, with alerts for overspending.
 - Accommodation Booking: Integration with booking platforms for convenient hotel and lodging reservations.
 - Reviews/Ratings: Users can read and submit reviews for attractions, restaurants, and accommodations.
+
 
 
 
