@@ -2,10 +2,9 @@ TRAVEl PLANNER
 
 TEAM NAME - FINESSERS
 
-RIZAN GABRIEL-ADELIN
-ANDREI MIHAI ALEXANDRU
+RIZAN GABRIEL-ADELIN & ANDREI MIHAI ALEXANDRU
 
-INSPIRATION: What we are trying to do is a better version of booking.com that includes also information about places to eat, cost of different stuff in the country you are visiting etc...
+INSPIRATION: What we are trying to do is a better version of booking.com that includes information about places to eat, cost of different stuff in the country you are visiting, different attractions etc...
 
 
 - Destination Search: Users can search for destinations based on location and interests.
