@@ -7,11 +7,8 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,8 +16,6 @@ import {
   faPlane,
   faCar,
   faBuilding,
-  faGlobe,
-  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 
 const pages = [
@@ -30,9 +25,16 @@ const pages = [
   { text: "Attractions", icon: faBuilding },
 ];
 
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
-
 function ResponsiveAppBar() {
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
+
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -46,6 +48,7 @@ function ResponsiveAppBar() {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
+              onClick={handleOpenNavMenu}
               color="inherit"
             >
               <MenuIcon />
@@ -61,6 +64,8 @@ function ResponsiveAppBar() {
                 vertical: "top",
                 horizontal: "left",
               }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
               sx={{
                 display: { xs: "block", md: "none" },
               }}
