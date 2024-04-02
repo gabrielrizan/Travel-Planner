@@ -1,17 +1,22 @@
-import "./App.css";
-import CustomNavbar from "./components/CustomNavbar";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import darkTheme from "./theme/theme"; // Import the dark theme
 import Test from "./components/Test";
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import LoginForm from "./components/LoginForm";
+import Header from "./components/Header";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
-    <Router>
-      <Switch>
-        <Route path="/" exact component={CustomNavbar} />
-        <Route path="/login" component={LoginForm} />
-      </Switch>
-    </Router>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
