@@ -12,9 +12,8 @@ function SearchBar() {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // Define state for the number of adults, children, and rooms
   const [selections, setSelections] = useState({
-    adults: 2,
+    adults: 1,
     children: 0,
     rooms: 1,
   });
@@ -48,12 +47,15 @@ function SearchBar() {
 
   // Function to handle incrementing and decrementing selection values
   const handleSelectionChange = (type, operation) => {
+    if (type === "children" && operation === "decrement" && selections.children === 0) {
+      return; // Don't allow decrementing children below 0
+    }
+
     setSelections((prev) => ({
       ...prev,
-      [type]: operation === "increment" ? prev[type] + 1 : Math.max(prev[type] - 1, 0),
+      [type]: operation === "increment" ? prev[type] + 1 : Math.max(prev[type] - 1, type === "children" ? 0 : 1),
     }));
   };
-
   const formatDateRange = (startDate, endDate) => {
     if (!startDate || !endDate) return "";
     return `${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")}`;
