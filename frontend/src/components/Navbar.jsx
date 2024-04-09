@@ -12,9 +12,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import MenuIcon from "@mui/icons-material/Menu";
-import { shadows } from "@mui/system";
-import SearchBar from "./SearchBar";
+import { useNavigate } from "react-router-dom";
 
 export default function ButtonAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -39,6 +37,8 @@ export default function ButtonAppBar() {
     handleCloseUserMenu();
   };
 
+  const navigate = useNavigate();
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -48,19 +48,20 @@ export default function ButtonAppBar() {
             noWrap
             sx={{
               mr: 2,
-              display: { xs: "flex", md: "flex" },
               flexGrow: 1,
               fontFamily: "monospace",
               fontWeight: 700,
               letterSpacing: ".1rem",
               color: "primary",
               textDecoration: "none",
+              cursor: "pointer",
             }}
+            onClick={() => navigate("/")}
           >
             NeoBooking
           </Typography>
           {loggedIn ? (
-            <Box sx={{ flexGrow: 0 }}>
+            <Box>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />

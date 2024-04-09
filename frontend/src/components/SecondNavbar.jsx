@@ -11,27 +11,32 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import sponsorImage from "../assets/sponsor.png";
-import SearchBar from "./SearchBar";
 import { faBed, faPlane, faCar, faBuilding } from "@fortawesome/free-solid-svg-icons";
-import { CardMedia } from "@mui/material";
-import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const pages = [
-  { text: "Stays", icon: faBed },
-  { text: "Flights", icon: faPlane },
-  { text: "Car rentals", icon: faCar },
-  { text: "Attractions", icon: faBuilding },
+  { text: "Stays", icon: faBed, route: "/stays" },
+  { text: "Flights", icon: faPlane, route: "/flights" },
+  { text: "Car rentals", icon: faCar, route: "/car-rentals" },
+  { text: "Attractions", icon: faBuilding, route: "/attractions" },
 ];
 
 function ResponsiveAppBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const navigateToRoute = (route) => {
+    navigate(route); // Use useNavigate hook to navigate
+    handleCloseNavMenu();
   };
 
   return (
@@ -60,7 +65,7 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page.text}>
+                <MenuItem key={page.text} onClick={() => navigateToRoute(page.route)}>
                   <FontAwesomeIcon icon={page.icon} style={{ marginRight: "8px" }} />
                   <Typography textAlign="center">{page.text}</Typography>
                 </MenuItem>
@@ -88,7 +93,7 @@ function ResponsiveAppBar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
-              <Button key={page.text} sx={{ my: 2, color: "white", display: "block" }}>
+              <Button key={page.text} onClick={() => navigateToRoute(page.route)} sx={{ my: 2, color: "white", display: "block" }}>
                 <FontAwesomeIcon icon={page.icon} style={{ marginRight: "8px" }} />
                 {page.text}
               </Button>
