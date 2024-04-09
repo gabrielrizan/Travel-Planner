@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { TextField, Container, Box, Popover, IconButton, Typography } from "@mui/material";
+import { TextField, Container, Box, Popover, IconButton, Typography, Button } from "@mui/material";
 import { DateRange } from "react-date-range";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { format } from "date-fns";
-
+import SearchIcon from "@mui/icons-material/Search";
 function SearchBar() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -126,6 +126,9 @@ function SearchBar() {
           ))}
         </Box>
       </Popover>
+      <Button variant="contained" color="primary" sx={{ height: "56px" }}>
+        Search
+      </Button>
     </Container>
   );
 }
