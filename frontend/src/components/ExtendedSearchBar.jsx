@@ -7,6 +7,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
 import axios from "axios";
+import ApiSearch from "./ApiSearch";
 
 function SearchBar() {
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -58,39 +59,9 @@ function SearchBar() {
     return `${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")}`;
   };
 
-  const handleSearch = () => {
-    // Make the API request here using the destination state
-    axios({
-      method: "GET",
-      url: "https://apidojo-booking-v1.p.rapidapi.com/locations/auto-complete",
-      params: {
-        text: destination,
-        languagecode: "en-us",
-      },
-      headers: {
-        "X-RapidAPI-Key": "bbdeb2a7c5msh970fd82ef5f7d95p14ad66jsnccde857e86c8",
-        "X-RapidAPI-Host": "apidojo-booking-v1.p.rapidapi.com",
-      },
-    })
-      .then((response) => {
-        console.log(response.data); // Handle the response data as needed
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  };
-
   return (
     <Container maxWidth="xl" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <TextField
-        id="destination-input"
-        label="Where are you going?"
-        variant="outlined"
-        placeholder="Enter your destination"
-        sx={{ marginRight: 0.4, width: "400px" }}
-        value={destination}
-        onChange={(e) => setDestination(e.target.value)} // Update destination state
-      />
+      <ApiSearch />
       <Box position="relative" sx={{ marginRight: 0.4 }}>
         <TextField
           id="date-range-input"
@@ -152,7 +123,7 @@ function SearchBar() {
           ))}
         </Box>
       </Popover>
-      <Button variant="contained" color="primary" sx={{ height: "56px" }} onClick={handleSearch}>
+      <Button variant="contained" color="primary" sx={{ height: "56px" }}>
         Search
       </Button>
     </Container>
