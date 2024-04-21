@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TextField, Container, Box, Popover, IconButton, Typography, Button } from "@mui/material";
 import { DateRange } from "react-date-range";
 import AddIcon from "@mui/icons-material/Add";
@@ -25,9 +25,11 @@ function SearchBar() {
       key: "selection",
     },
   ]);
-  const [destination, setDestination] = useState(""); // State to store destination text
+  const [destinationId, setDestinationId] = useState(null); // State to store destination ID
 
-  const popoverId = popoverOpen ? "simple-popover" : undefined; // Move popoverId declaration here
+  const [searchTriggered, setSearchTriggered] = useState(false); // State to track if search has been triggered
+
+  const popoverId = popoverOpen ? "simple-popover" : undefined;
 
   const handleCalendarClick = (event) => {
     event.preventDefault();
@@ -45,7 +47,7 @@ function SearchBar() {
 
   const handleSelectionChange = (type, operation) => {
     if (type === "children" && operation === "decrement" && selections.children === 0) {
-      return; // Don't allow decrementing children below 0
+      return;
     }
 
     setSelections((prev) => ({
@@ -59,9 +61,58 @@ function SearchBar() {
     return `${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")}`;
   };
 
+  const [hotels, setHotels] = useState([]);
+
+  useEffect(() => {
+    if (searchTriggered && destinationId) {
+      handleSearch(); // Trigger search when destinationId is available
+      setSearchTriggered(false); // Reset searchTriggered state
+    }
+  }, [destinationId, searchTriggered]);
+
+  const handleSearch = async () => {
+    if (!destinationId) {
+      console.log("Please select a destination first.");
+      console.log(destinationId);
+      return;
+    }
+
+    const formattedCheckinDate = format(dateRange[0].startDate, "yyyy-MM-dd");
+    const formattedCheckoutDate = format(dateRange[0].endDate, "yyyy-MM-dd");
+
+    const options = {
+      method: "GET",
+      url: "https://booking-com18.p.rapidapi.com/stays/search",
+      params: {
+        locationId: destinationId,
+        checkinDate: formattedCheckinDate,
+        checkoutDate: formattedCheckoutDate,
+        rooms: selections.rooms,
+        adults: selections.adults,
+        currencyCode: "RON",
+      },
+      headers: {
+        "X-RapidAPI-Key": "bbdeb2a7c5msh970fd82ef5f7d95p14ad66jsnccde857e86c8",
+        "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
+      },
+    };
+
+    try {
+      const response = await axios.request(options);
+      setHotels(response.data.data);
+      console.log(hotels);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDestinationSelect = (selectedDestinationId) => {
+    setDestinationId(selectedDestinationId); // Set the selected destination ID to state
+  };
+
   return (
     <Container maxWidth="xl" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <ApiSearch />
+      <ApiSearch onDestinationSelect={handleDestinationSelect} />
       <Box position="relative" sx={{ marginRight: 0.4 }}>
         <TextField
           id="date-range-input"
@@ -123,7 +174,7 @@ function SearchBar() {
           ))}
         </Box>
       </Popover>
-      <Button variant="contained" color="primary" sx={{ height: "56px" }}>
+      <Button variant="contained" color="primary" sx={{ height: "56px" }} onClick={handleSearch}>
         Search
       </Button>
     </Container>
