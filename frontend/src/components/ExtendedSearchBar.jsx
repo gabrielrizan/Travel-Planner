@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import axios from "axios";
 import ApiSearch from "./ApiSearch";
 
-function SearchBar() {
+function SearchBar({ props }) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -61,8 +61,6 @@ function SearchBar() {
     return `${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")}`;
   };
 
-  const [hotels, setHotels] = useState([]);
-
   useEffect(() => {
     if (searchTriggered && destinationId) {
       handleSearch(); // Trigger search when destinationId is available
@@ -99,8 +97,8 @@ function SearchBar() {
 
     try {
       const response = await axios.request(options);
-      setHotels(response.data.data);
-      console.log(hotels);
+      console.log(response.data.data);
+      props(response.data.data); // Send data to parent component
     } catch (error) {
       console.error(error);
     }

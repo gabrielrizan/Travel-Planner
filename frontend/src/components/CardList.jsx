@@ -1,35 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { Grid, Container } from "@mui/material";
-import HotelCard from "./HotelCard";
+import HotelCard from "./HotelCard"; // Importing the HotelCard component
 
-const CardList = () => {
-  const [hotels] = useState([
-    {
-      hotel_name: "Hotel 1",
-      rating: 4.5,
-      lowest_price: 100,
-      currency_code: "USD",
-    },
-    {
-      hotel_name: "Hotel 2",
-      rating: 4.0,
-      lowest_price: 80,
-      currency_code: "USD",
-    },
-    {
-      hotel_name: "Hotel 3",
-      rating: 3.5,
-      lowest_price: 60,
-      currency_code: "USD",
-    },
-  ]);
-
+const CardList = ({ hotelsData }) => {
   return (
-    <Container maxWidth="xl">
-      <Grid container spacing={2}>
-        {hotels.map((hotel, index) => (
-          <Grid item key={index} xs={12} sm={6} md={4}>
-            <HotelCard name={hotel.hotel_name} rating={hotel.rating} price={`${hotel.lowest_price} ${hotel.currency_code}`} />
+    <Container maxWidth="xl" sx={{ marginTop: "20px" }}>
+      <Grid container spacing={4}>
+        {hotelsData.map((hotel) => (
+          <Grid item key={hotel.id} xs={12} sm={6} md={4} lg={3}>
+            <HotelCard name={hotel.name} rating={hotel.reviewScore} price={`${hotel.priceBreakdown.grossPrice.amountRounded} ${hotel.currency}`} image={hotel.photoUrls[0]} />
           </Grid>
         ))}
       </Grid>
