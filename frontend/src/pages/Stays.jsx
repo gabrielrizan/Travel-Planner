@@ -12,6 +12,7 @@ const Stays = () => {
   const handleHotelsData = (data) => {
     setHotelsData(data);
   };
+
   return (
     <>
       <Navbar />

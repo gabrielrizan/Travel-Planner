@@ -8,6 +8,7 @@ import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
 import axios from "axios";
 import ApiSearch from "./ApiSearch";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function SearchBar({ props }) {
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -61,6 +62,9 @@ function SearchBar({ props }) {
     return `${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")}`;
   };
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
     if (searchTriggered && destinationId) {
       handleSearch(); // Trigger search when destinationId is available
@@ -99,6 +103,10 @@ function SearchBar({ props }) {
       const response = await axios.request(options);
       console.log(response.data.data);
       props(response.data.data); // Send data to parent component
+      //if pathname isn't /stays redirect to stays use react router
+      if (location.pathname !== "/stays") {
+        navigate("/stays");
+      }
     } catch (error) {
       console.error(error);
     }
