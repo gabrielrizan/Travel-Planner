@@ -7,9 +7,10 @@ import Trending from "../components/Trending";
 import Footer from "../components/Footer";
 import ExtendedSearchBar from "../components/ExtendedSearchBar";
 import { useState } from "react";
+import { useHotelsData } from "../context/StaysContext";
 
 function HomePage() {
-  const [hotelsData, setHotelsData] = useState([]);
+  const [hotelsData, setHotelsData] = useHotelsData();
 
   const handleHotelsData = (data) => {
     setHotelsData(data);

@@ -5,9 +5,10 @@ import Footer from "../components/Footer";
 import ExtendedSearchBar from "../components/ExtendedSearchBar";
 import CardList from "../components/CardList";
 import { useState } from "react";
+import { useHotelsData } from "../context/StaysContext";
 
 const Stays = () => {
-  const [hotelsData, setHotelsData] = useState([]);
+  const [hotelsData, setHotelsData] = useHotelsData();
 
   const handleHotelsData = (data) => {
     setHotelsData(data);
