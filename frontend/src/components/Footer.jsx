@@ -19,7 +19,7 @@ function Footer() {
       <AppBar position="relative" color="primary" sx={{ top: "auto", bottom: 0, width: "100%" }}>
         <Toolbar sx={{ justifyContent: "center", width: "100%" }}>
           <Typography variant="body1" align="center">
-            © {new Date().getFullYear()} NeoBooking
+            © {new Date().getFullYear()} NeoBookingFILS
           </Typography>
         </Toolbar>
       </AppBar>
