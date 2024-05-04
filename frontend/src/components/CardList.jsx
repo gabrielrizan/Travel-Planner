@@ -19,11 +19,13 @@ const CardList = ({ hotelsData }) => {
               rating={hotel.reviewScore}
               price={`${hotel.priceBreakdown.grossPrice.amountRounded} ${hotel.currency}`}
               image={changeImageResolution(hotel.photoUrls[0], "max500")}
+              id={hotel.id}
             />
           </Grid>
         ))}
       </Grid>
     </Container>
+
   );
 };
 

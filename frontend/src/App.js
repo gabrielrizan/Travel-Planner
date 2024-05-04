@@ -5,6 +5,8 @@ import darkTheme from "./theme/theme"; // Import the dark theme
 import HomePage from "./pages/HomePage";
 import Stays from "./pages/Stays";
 import StaysProvider from "./context/StaysProvider";
+import HotelDetails from "./components/HotelDetails";
+
 function App() {
   return (
     <ThemeProvider theme={darkTheme}>
@@ -13,7 +15,8 @@ function App() {
         <StaysProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/stays" element={<Stays />} />
+            <Route path="/stays/*" element={<Stays />} />
+            <Route path="/stays/:hotelName/*" element={<HotelDetails />} />
           </Routes>
         </StaysProvider>
       </BrowserRouter>
