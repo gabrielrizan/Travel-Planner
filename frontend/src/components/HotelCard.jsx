@@ -35,9 +35,23 @@ const HotelCard = ({ name, rating, price, image, id }) => {
         },
       };
 
+      // console.log(id);
       const photoResponse = await axios.request(photoOptions);
-      console.log(id);
-      console.log(photoResponse.data.data[id]);
+      //  console.log(photoResponse);
+      //  console.log(photoResponse.data.data.data[id]);
+      let imageUrls = [];
+
+      photoResponse.data.data.data[id].forEach((photo) => {
+        let imageUrl = photo[4][5];
+        imageUrls.push(imageUrl);
+      });
+
+      imageUrls.map((url) => console.log(url));
+
+      
+      navigate(`/stays/${name}`, { state: { description: descriptionData.description, name: name, rating: rating, price: price, id: id, photos: imageUrls } });
+      console.log(description);
+      // console.log(photos);
     } catch (error) {
       console.error(error);
     }

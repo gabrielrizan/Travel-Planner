@@ -1,14 +1,16 @@
 import React from "react";
-import { Container, Grid, Typography, Card, CardMedia, CardContent, List, ListItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
+import { Container, Grid, Typography, Card, CardMedia, CardContent, List, ListItem, ListItemIcon, ListItemText, Divider, ImageList, ImageListItem } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import roomImage from "../assets/room.jpeg";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
+
 const HotelDetails = () => {
   const location = useLocation();
-  const hotelDescription = location.state?.description || "No description available";
+  const hotelDescription = location.state?.description;
   const hotelName = location.state?.name;
   const image = location.state?.image || roomImage;
+  const hotelPhotos = location.state?.photos;
 
   const hotel = {
     name: hotelName,
@@ -25,7 +27,7 @@ const HotelDetails = () => {
       { id: 2, content: "Good location, friendly staff." },
       { id: 3, content: "Room was clean and comfortable." },
     ],
-    photos: [image], // Use the imported image file
+    photos: hotelPhotos.map((photo) => `http://cf.bstatic.com${photo}`), // Use the imported image file
   };
 
   return (
@@ -57,6 +59,13 @@ const HotelDetails = () => {
                 </List>
               </CardContent>
             </Card>
+            <ImageList sx={{ width: "100%", height: 450 }} cols={3} rowHeight={164}>
+              {hotel.photos.map((item, index) => (
+                <ImageListItem key={index}>
+                  <img src={`${item}?w=164&h=164&fit=crop&auto=format`} srcSet={`${item}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`} alt={hotel.name} loading="lazy" />
+                </ImageListItem>
+              ))}
+            </ImageList>
           </Grid>
           <Grid item xs={12} md={4}>
             <Card sx={{ mb: 2 }}>
