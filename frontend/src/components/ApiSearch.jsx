@@ -39,7 +39,11 @@ const ApiSearch = ({ onDestinationSelect }) => {
     };
     try {
       const response = await axios.request(options);
-      setOptions(response.data.data);
+      const mappedOptions = response.data.data.map((item) => ({
+        id: item.id,
+        label: item.label,
+      }));
+      setOptions(mappedOptions);
     } catch (error) {
       console.error(error);
     } finally {
@@ -49,9 +53,10 @@ const ApiSearch = ({ onDestinationSelect }) => {
 
   const debouncedSearch = debounce(handleSearch, 500);
 
-  const handleDestinationSelect = (destinationId) => {
+  const handleDestinationSelect = (destinationId, destinationName) => {
     console.log(destinationId);
-    onDestinationSelect(destinationId); // Send selected destination ID to parent component
+    console.log(destinationName);
+    onDestinationSelect(destinationId, destinationName); // Send selected destination ID to parent component
   };
 
   useEffect(() => {
@@ -98,7 +103,7 @@ const ApiSearch = ({ onDestinationSelect }) => {
       }}
       onChange={(event, value) => {
         if (value) {
-          handleDestinationSelect(value.id);
+          handleDestinationSelect(value.id, value.label);
         }
       }}
       renderInput={(params) => (
