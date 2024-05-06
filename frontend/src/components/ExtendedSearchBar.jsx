@@ -12,6 +12,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useSearchContext } from "../context/SearchContext";
 
 function SearchBar({ props }) {
+  const apiKey = process.env.REACT_APP_RAPIDAPI_KEY;
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -85,7 +86,7 @@ function SearchBar({ props }) {
         currencyCode: "RON",
       },
       headers: {
-        "X-RapidAPI-Key": "bbdeb2a7c5msh970fd82ef5f7d95p14ad66jsnccde857e86c8",
+        "X-RapidAPI-Key": apiKey,
         "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
       },
     };

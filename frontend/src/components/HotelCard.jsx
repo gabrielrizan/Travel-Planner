@@ -5,6 +5,7 @@ import axios from "axios";
 import { useState } from "react";
 
 const HotelCard = ({ name, rating, price, image, id }) => {
+  const apiKey = process.env.REACT_APP_RAPIDAPI_KEY;
   const navigate = useNavigate();
   const [description, setDescription] = useState("");
   const [photos, setPhotos] = useState([]);
@@ -16,7 +17,7 @@ const HotelCard = ({ name, rating, price, image, id }) => {
         url: "https://booking-com18.p.rapidapi.com/stays/get-description",
         params: { hotelId: id },
         headers: {
-          "X-RapidAPI-Key": "bbdeb2a7c5msh970fd82ef5f7d95p14ad66jsnccde857e86c8",
+          "X-RapidAPI-Key": apiKey,
           "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
         },
       };
@@ -30,7 +31,7 @@ const HotelCard = ({ name, rating, price, image, id }) => {
         url: "https://booking-com18.p.rapidapi.com/stays/get-photos",
         params: { hotelId: id },
         headers: {
-          "X-RapidAPI-Key": "bbdeb2a7c5msh970fd82ef5f7d95p14ad66jsnccde857e86c8",
+          "X-RapidAPI-Key": apiKey,
           "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
         },
       };
@@ -48,7 +49,6 @@ const HotelCard = ({ name, rating, price, image, id }) => {
 
       imageUrls.map((url) => console.log(url));
 
-      
       navigate(`/stays/${name}`, { state: { description: descriptionData.description, name: name, rating: rating, price: price, id: id, photos: imageUrls } });
       console.log(description);
       // console.log(photos);

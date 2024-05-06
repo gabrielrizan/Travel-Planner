@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TextField, Autocomplete, CircularProgress } from "@mui/material";
 import axios from "axios";
 
-function sleep(duration) {
+const sleep = (duration) => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, duration);
+    setTimeout(resolve, duration);
   });
-}
+};
 
 const debounce = (func, delay) => {
   let timeoutId;
@@ -19,69 +17,59 @@ const debounce = (func, delay) => {
 };
 
 const ApiSearch = ({ onDestinationSelect }) => {
+  const apiKey = process.env.REACT_APP_RAPIDAPI_KEY;
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async (inputValue) => {
     if (!inputValue) {
+      setOptions([]); // Clear options if input is empty
       return;
     }
     setLoading(true);
-    const options = {
-      method: "GET",
-      url: "https://booking-com18.p.rapidapi.com/stays/auto-complete",
-      params: { query: inputValue },
-      headers: {
-        "X-RapidAPI-Key": "bbdeb2a7c5msh970fd82ef5f7d95p14ad66jsnccde857e86c8",
-        "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
-      },
-    };
     try {
-      const response = await axios.request(options);
+      const response = await axios.get("https://booking-com18.p.rapidapi.com/stays/auto-complete", {
+        params: { query: inputValue },
+        headers: {
+          "X-RapidAPI-Key": apiKey,
+          "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
+        },
+      });
       const mappedOptions = response.data.data.map((item) => ({
         id: item.id,
         label: item.label,
       }));
       setOptions(mappedOptions);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching autocomplete options:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const debouncedSearch = debounce(handleSearch, 500);
-
-  const handleDestinationSelect = (destinationId, destinationName) => {
-    console.log(destinationId);
-    console.log(destinationName);
-    onDestinationSelect(destinationId, destinationName); // Send selected destination ID to parent component
-  };
+  const debouncedSearch = debounce(handleSearch, 1000);
 
   useEffect(() => {
     let active = true;
 
-    if (!open) {
-      setOptions([]);
-    }
-
-    if (!loading || !open) {
-      return undefined;
-    }
-
-    (async () => {
-      await sleep(1e3); // For demo purposes.
-
-      if (active) {
-        await handleSearch();
+    const fetchOptions = async (inputValue) => {
+      if (!open || !inputValue) {
+        setOptions([]);
+        return;
       }
-    })();
+      await sleep(1000); // For demo purposes.
+      if (active) {
+        await handleSearch(inputValue);
+      }
+    };
+
+    fetchOptions();
 
     return () => {
       active = false;
     };
-  }, [loading, open]);
+  }, [open]);
 
   return (
     <Autocomplete
@@ -103,7 +91,7 @@ const ApiSearch = ({ onDestinationSelect }) => {
       }}
       onChange={(event, value) => {
         if (value) {
-          handleDestinationSelect(value.id, value.label);
+          onDestinationSelect(value.id, value.label);
         }
       }}
       renderInput={(params) => (
@@ -114,7 +102,7 @@ const ApiSearch = ({ onDestinationSelect }) => {
             ...params.InputProps,
             endAdornment: (
               <React.Fragment>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                {loading && <CircularProgress color="inherit" size={20} />}
                 {params.InputProps.endAdornment}
               </React.Fragment>
             ),
