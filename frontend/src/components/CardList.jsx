@@ -8,10 +8,14 @@ const changeImageResolution = (url, newResolution) => {
 };
 
 const CardList = ({ hotelsData }) => {
+  if (!hotelsData || !hotelsData.data || hotelsData.data.length === 0) {
+    return <div></div>;
+  }
+
   return (
     <Container maxWidth="xl" sx={{ marginTop: "20px" }}>
       <Grid container spacing={4}>
-        {hotelsData.map((hotel) => (
+        {hotelsData.data.map((hotel) => (
           <Grid item key={hotel.id} xs={12} sm={6} md={4} lg={3}>
             {/* Using max500 as the new resolution for images */}
             <HotelCard
@@ -25,7 +29,6 @@ const CardList = ({ hotelsData }) => {
         ))}
       </Grid>
     </Container>
-
   );
 };
 

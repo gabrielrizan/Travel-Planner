@@ -9,26 +9,14 @@ import { format } from "date-fns";
 import axios from "axios";
 import ApiSearch from "./ApiSearch";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSearchContext } from "../context/SearchContext";
 
 function SearchBar({ props }) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selections, setSelections] = useState({
-    adults: 1,
-    children: 0,
-    rooms: 1,
-  });
-  const [dateRange, setDateRange] = useState([
-    {
-      startDate: new Date(),
-      endDate: null,
-      key: "selection",
-    },
-  ]);
-  const [destinationId, setDestinationId] = useState(null); // State to store destination ID
-
-  const [searchTriggered, setSearchTriggered] = useState(false); // State to track if search has been triggered
+  const { searchState, setSearchState } = useSearchContext();
+  const { destinationId, dateRange, selections, searchTriggered, destinationName } = searchState;
 
   const popoverId = popoverOpen ? "simple-popover" : undefined;
 
@@ -51,9 +39,12 @@ function SearchBar({ props }) {
       return;
     }
 
-    setSelections((prev) => ({
-      ...prev,
-      [type]: operation === "increment" ? prev[type] + 1 : Math.max(prev[type] - 1, type === "children" ? 0 : 1),
+    setSearchState((prevSearchState) => ({
+      ...prevSearchState,
+      selections: {
+        ...prevSearchState.selections,
+        [type]: operation === "increment" ? prevSearchState.selections[type] + 1 : Math.max(prevSearchState.selections[type] - 1, type === "children" ? 0 : 1),
+      },
     }));
   };
 
@@ -68,7 +59,7 @@ function SearchBar({ props }) {
   useEffect(() => {
     if (searchTriggered && destinationId) {
       handleSearch(); // Trigger search when destinationId is available
-      setSearchTriggered(false); // Reset searchTriggered state
+      setSearchState((prevSearchState) => ({ ...prevSearchState, searchTriggered: false })); // Reset searchTriggered state
     }
   }, [destinationId, searchTriggered]);
 
@@ -101,8 +92,15 @@ function SearchBar({ props }) {
 
     try {
       const response = await axios.request(options);
-      console.log(response.data.data);
-      props(response.data.data); // Send data to parent component
+
+      const searchData = {
+        data: response.data.data,
+        checkInDate: formattedCheckinDate,
+        checkOutDate: formattedCheckoutDate,
+      };
+
+      props(searchData); // Send data to parent component
+      console.log(searchData);
       //if pathname isn't /stays redirect to stays use react router
       if (location.pathname !== "/stays") {
         navigate("/stays");
@@ -112,8 +110,9 @@ function SearchBar({ props }) {
     }
   };
 
-  const handleDestinationSelect = (selectedDestinationId) => {
-    setDestinationId(selectedDestinationId); // Set the selected destination ID to state
+  const handleDestinationSelect = (selectedDestinationId, selectedDestinationName) => {
+    setSearchState((prevSearchState) => ({ ...prevSearchState, destinationId: selectedDestinationId, destinationName: destinationName }));
+    console.log(selectedDestinationId, selectedDestinationName, destinationName, destinationId);
   };
 
   return (
@@ -131,7 +130,12 @@ function SearchBar({ props }) {
         />
         {calendarOpen && (
           <Box position="absolute" top="100%" zIndex={1}>
-            <DateRange editableDateInputs={true} onChange={(item) => setDateRange([item.selection])} moveRangeOnFirstSelection={false} ranges={dateRange} />
+            <DateRange
+              editableDateInputs={true}
+              onChange={(item) => setSearchState((prevSearchState) => ({ ...prevSearchState, dateRange: [item.selection] }))}
+              moveRangeOnFirstSelection={false}
+              ranges={dateRange}
+            />
           </Box>
         )}
       </Box>
