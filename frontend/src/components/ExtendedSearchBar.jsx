@@ -104,7 +104,10 @@ function SearchBar({ props }) {
       console.log(searchData);
       //if pathname isn't /stays redirect to stays use react router
       if (location.pathname !== "/stays") {
-        navigate("/stays");
+        // Save destinationName to localStorage
+        localStorage.setItem("destinationName", destinationName);
+        // Navigate to the /stays page with the selected destination name as a query parameter
+        navigate(`/stays?destinationName=${encodeURIComponent(destinationName)}`);
       }
     } catch (error) {
       console.error(error);
@@ -112,13 +115,12 @@ function SearchBar({ props }) {
   };
 
   const handleDestinationSelect = (selectedDestinationId, selectedDestinationName) => {
-    setSearchState((prevSearchState) => ({ ...prevSearchState, destinationId: selectedDestinationId, destinationName: destinationName }));
-    console.log(selectedDestinationId, selectedDestinationName, destinationName, destinationId);
+    setSearchState((prevSearchState) => ({ ...prevSearchState, destinationId: selectedDestinationId, destinationName: selectedDestinationName }));
   };
 
   return (
     <Container maxWidth="xl" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <ApiSearch onDestinationSelect={handleDestinationSelect} />
+      <ApiSearch onDestinationSelect={handleDestinationSelect} defaultValue={destinationName} />
       <Box position="relative" sx={{ marginRight: 0.4 }}>
         <TextField
           id="date-range-input"
@@ -173,7 +175,7 @@ function SearchBar({ props }) {
         <Box p={2}>
           {Object.entries(selections).map(([key, value]) => (
             <Box key={key} display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-              <Typography>{key.charAt(0).toUpperCase() + key.slice(1)}</Typography>
+              <Typography>{key.charAt(0).toUpperCase() + key.toUpperCase() + key.slice(1)}</Typography>
               <IconButton onClick={() => handleSelectionChange(key, "decrement")}>
                 <RemoveIcon />
               </IconButton>
