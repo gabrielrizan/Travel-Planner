@@ -1,9 +1,28 @@
-import React from "react";
-import { Container, Grid, Typography, Card, CardMedia, CardContent, List, ListItem, ListItemIcon, ListItemText, Divider, ImageList, ImageListItem } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Container,
+  Grid,
+  Typography,
+  Card,
+  CardMedia,
+  CardContent,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  ImageList,
+  ImageListItem,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Box,
+} from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import roomImage from "../assets/room.jpeg";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const HotelDetails = () => {
   const location = useLocation();
@@ -11,23 +30,23 @@ const HotelDetails = () => {
   const hotelName = location.state?.name;
   const image = location.state?.image || roomImage;
   const hotelPhotos = location.state?.photos;
+  const roomData = location.state?.roomData;
 
   const hotel = {
     name: hotelName,
     address: "123 Main St, City, Country",
     description: hotelDescription,
     facilities: ["Free Wi-Fi", "Swimming Pool", "Gym", "Restaurant"],
-    rooms: [
-      { id: 1, type: "Standard Room", price: "$100" },
-      { id: 2, type: "Deluxe Room", price: "$150" },
-      { id: 3, type: "Suite", price: "$250" },
-    ],
-    reviews: [
-      { id: 1, content: "Great hotel, loved the amenities!" },
-      { id: 2, content: "Good location, friendly staff." },
-      { id: 3, content: "Room was clean and comfortable." },
-    ],
+
     photos: hotelPhotos.map((photo) => `http://cf.bstatic.com${photo}`), // Use the imported image file
+  };
+
+  // State to manage active room
+  const [activeRoom, setActiveRoom] = useState(null);
+
+  // Function to handle room selection
+  const handleRoomSelect = (roomId) => {
+    setActiveRoom(roomId === activeRoom ? null : roomId);
   };
 
   return (
@@ -68,27 +87,26 @@ const HotelDetails = () => {
             </ImageList>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Card sx={{ mb: 2 }}>
+            <Card>
               <CardContent>
                 <Typography gutterBottom variant="h6">
                   Rooms & Availability
                 </Typography>
-                {hotel.rooms.map((room) => (
-                  <Typography key={room.id}>
-                    {room.type} - {room.price} per night
-                  </Typography>
-                ))}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <Typography gutterBottom variant="h6">
-                  Reviews
-                </Typography>
-                {hotel.reviews.map((review) => (
-                  <Typography key={review.id} paragraph>
-                    {review.content}
-                  </Typography>
+                {roomData.map((room) => (
+                  <Accordion key={room.room_id} expanded={activeRoom === room.room_id} onChange={() => handleRoomSelect(room.room_id)}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      <Typography>{room.room_name}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Box>
+                        <Typography>
+                          {room.type} - {room.price} per night
+                        </Typography>
+                        <Typography>{room.description}</Typography>
+                        {/* Render additional room information here */}
+                      </Box>
+                    </AccordionDetails>
+                  </Accordion>
                 ))}
               </CardContent>
             </Card>

@@ -24,6 +24,8 @@ const CardList = ({ hotelsData }) => {
               price={`${hotel.priceBreakdown.grossPrice.amountRounded} ${hotel.currency}`}
               image={changeImageResolution(hotel.photoUrls[0], "max500")}
               id={hotel.id}
+              checkinDate={hotel.checkinDate}
+              checkoutDate={hotel.checkoutDate}
             />
           </Grid>
         ))}

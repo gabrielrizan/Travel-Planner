@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
 
-const HotelCard = ({ name, rating, price, image, id }) => {
+const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }) => {
   const apiKey = process.env.REACT_APP_RAPIDAPI_KEY;
   const navigate = useNavigate();
   const [description, setDescription] = useState("");
@@ -47,9 +47,24 @@ const HotelCard = ({ name, rating, price, image, id }) => {
         imageUrls.push(imageUrl);
       });
 
-      imageUrls.map((url) => console.log(url));
+      const roomOptions = {
+        method: "GET",
+        url: "https://booking-com18.p.rapidapi.com/stays/room-list",
+        params: {
+          hotelId: id,
+          checkinDate: checkinDate,
+          checkoutDate: checkoutDate,
+        },
+        headers: {
+          "X-RapidAPI-Key": apiKey,
+          "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
+        },
+      };
+      const roomResponse = await axios.request(roomOptions);
+      let roomData = roomResponse.data.data.room_list;
+      console.log(roomData);
 
-      navigate(`/stays/${name}`, { state: { description: descriptionData.description, name: name, rating: rating, price: price, id: id, photos: imageUrls } });
+      navigate(`/stays/${name}`, { state: { description: descriptionData.description, name: name, rating: rating, price: price, id: id, photos: imageUrls, roomData: roomData } });
       console.log(description);
       // console.log(photos);
     } catch (error) {
