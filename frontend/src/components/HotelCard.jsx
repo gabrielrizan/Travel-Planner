@@ -43,7 +43,7 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
       let imageUrls = [];
 
       photoResponse.data.data.data[id].forEach((photo) => {
-        let imageUrl = photo[4][5];
+        let imageUrl = photo[4][25];
         imageUrls.push(imageUrl);
       });
 
@@ -64,7 +64,24 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
       let roomData = roomResponse.data.data.room_list;
       console.log(roomData);
 
-      navigate(`/stays/${name}`, { state: { description: descriptionData.description, name: name, rating: rating, price: price, id: id, photos: imageUrls, roomData: roomData } });
+      const addressOptions = {
+        method: "GET",
+        url: "https://booking-com18.p.rapidapi.com/stays/detail",
+        params: {
+          hotelId: id,
+          checkinDate: checkinDate,
+          checkoutDate: checkoutDate,
+        },
+        headers: {
+          "X-RapidAPI-Key": "bbdeb2a7c5msh970fd82ef5f7d95p14ad66jsnccde857e86c8",
+          "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
+        },
+      };
+
+      const addressResponse = await axios.request(addressOptions);
+      let address = addressResponse.data.data.address;
+      console.log("Address: ", address);
+      navigate(`/stays/${name}`, { state: { description: descriptionData.description, name: name, rating: rating, price: price, id: id, photos: imageUrls, roomData: roomData, address: address } });
       console.log(description);
       // console.log(photos);
     } catch (error) {

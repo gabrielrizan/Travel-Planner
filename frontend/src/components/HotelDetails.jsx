@@ -23,6 +23,8 @@ import roomImage from "../assets/room.jpeg";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Carousel } from "react-responsive-carousel"; // Import Carousel component
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import Carousel styles
 
 const HotelDetails = () => {
   const location = useLocation();
@@ -31,13 +33,13 @@ const HotelDetails = () => {
   const image = location.state?.image || roomImage;
   const hotelPhotos = location.state?.photos;
   const roomData = location.state?.roomData;
+  const hotelAddress = location.state?.address;
 
   const hotel = {
     name: hotelName,
-    address: "123 Main St, City, Country",
+    address: hotelAddress,
     description: hotelDescription,
     facilities: ["Free Wi-Fi", "Swimming Pool", "Gym", "Restaurant"],
-
     photos: hotelPhotos.map((photo) => `http://cf.bstatic.com${photo}`), // Use the imported image file
   };
 
@@ -56,7 +58,7 @@ const HotelDetails = () => {
         <Grid container spacing={4}>
           <Grid item xs={12} md={8}>
             <Card>
-              <CardMedia component="img" height="250" image={hotel.photos[0]} alt={hotel.name} />
+              <CardMedia component="img" height="400" image={hotel.photos[0]} alt={hotel.name} />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   {hotel.name}
@@ -90,7 +92,7 @@ const HotelDetails = () => {
             <Card>
               <CardContent>
                 <Typography gutterBottom variant="h6">
-                  Rooms & Availability
+                  Rooms
                 </Typography>
                 {roomData.map((room) => (
                   <Accordion key={room.room_id} expanded={activeRoom === room.room_id} onChange={() => handleRoomSelect(room.room_id)}>
@@ -99,11 +101,17 @@ const HotelDetails = () => {
                     </AccordionSummary>
                     <AccordionDetails>
                       <Box>
-                        <Typography>
+                        <Carousel showArrows={true} showThumbs={false} showIndicators={false}>
+                          {room.photos.map((photo, index) => (
+                            <div key={index}>
+                              <img src={photo.url_original} alt={`Room ${index + 1}`} style={{ width: "300px", height: "200px" }} /> {/* Updated line */}
+                            </div>
+                          ))}
+                        </Carousel>
+                        {/* <Typography>
                           {room.type} - {room.price} per night
-                        </Typography>
+                        </Typography> */}
                         <Typography>{room.description}</Typography>
-                        {/* Render additional room information here */}
                       </Box>
                     </AccordionDetails>
                   </Accordion>
