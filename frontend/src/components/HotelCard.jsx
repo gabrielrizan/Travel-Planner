@@ -62,7 +62,19 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
       };
       const roomResponse = await axios.request(roomOptions);
       let roomData = roomResponse.data.data.room_list;
+      const roomPrices = {};
+
+      // Extract price for each room
+      roomData.forEach((room) => {
+        const roomId = room.room_id;
+        const block = roomResponse.data.data.block.find((block) => block.room_id === roomId);
+        if (block && block.product_price_breakdown && block.product_price_breakdown.net_amount) {
+          roomPrices[roomId] = block.product_price_breakdown.net_amount;
+        }
+      });
+
       console.log(roomData);
+      console.log(roomPrices);
 
       const addressOptions = {
         method: "GET",
@@ -80,8 +92,23 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
 
       const addressResponse = await axios.request(addressOptions);
       let address = addressResponse.data.data.address;
+      let facilities = addressResponse.data.data.facilities_block.facilities;
+      console.log("Facilities: ", facilities);
       console.log("Address: ", address);
-      navigate(`/stays/${name}`, { state: { description: descriptionData.description, name: name, rating: rating, price: price, id: id, photos: imageUrls, roomData: roomData, address: address } });
+      navigate(`/stays/${name}`, {
+        state: {
+          description: descriptionData.description,
+          name: name,
+          rating: rating,
+          price: price,
+          id: id,
+          photos: imageUrls,
+          roomData: roomData,
+          address: address,
+          roomPrices: roomPrices,
+          facilities: facilities,
+        },
+      });
       console.log(description);
       // console.log(photos);
     } catch (error) {

@@ -17,14 +17,27 @@ import {
   AccordionSummary,
   AccordionDetails,
   Box,
+  IconButton,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
-import roomImage from "../assets/room.jpeg";
-import { useLocation } from "react-router-dom";
-import Navbar from "./Navbar";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import WifiIcon from "@mui/icons-material/Wifi";
+import PoolIcon from "@mui/icons-material/Pool";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import RestaurantIcon from "@mui/icons-material/Restaurant";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Carousel } from "react-responsive-carousel"; // Import Carousel component
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import Carousel styles
+import roomImage from "../assets/room.jpeg";
+import { useLocation } from "react-router-dom";
+import Navbar from "./Navbar";
+import RoomServiceIcon from "@mui/icons-material/RoomService";
+import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew"; // Import the icon
+import WeekendIcon from "@mui/icons-material/Weekend";
+import ShutterSpeedIcon from "@mui/icons-material/ShutterSpeed";
+import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
+import LuggageIcon from "@mui/icons-material/Luggage";
+import CameraOutdoorIcon from "@mui/icons-material/CameraOutdoor";
 
 const HotelDetails = () => {
   const location = useLocation();
@@ -34,12 +47,36 @@ const HotelDetails = () => {
   const hotelPhotos = location.state?.photos;
   const roomData = location.state?.roomData;
   const hotelAddress = location.state?.address;
+  const roomPrices = location.state?.roomPrices;
+  const facilities = location.state?.facilities;
+
+  const getFacilityIcon = (iconName) => {
+    switch (iconName) {
+      case "wifi":
+        return <WifiIcon />;
+      case "couch":
+        return <WeekendIcon />;
+      case "instantconf":
+        return <ShutterSpeedIcon />;
+      case "frontdesk":
+        return <ContactPhoneIcon />;
+      case "cabin_trolley":
+        return <LuggageIcon />;
+      case "concierge":
+        return <RoomServiceIcon />;
+      case "videochat":
+        return <CameraOutdoorIcon />;
+    }
+  };
 
   const hotel = {
     name: hotelName,
     address: hotelAddress,
     description: hotelDescription,
-    facilities: ["Free Wi-Fi", "Swimming Pool", "Gym", "Restaurant"],
+    facilities: facilities.map((facility, index) => ({
+      icon: getFacilityIcon(facility.icon), // You need to define getFacilityIcon function
+      text: facility.name,
+    })),
     photos: hotelPhotos.map((photo) => `http://cf.bstatic.com${photo}`), // Use the imported image file
   };
 
@@ -63,18 +100,16 @@ const HotelDetails = () => {
                 <Typography gutterBottom variant="h5" component="div">
                   {hotel.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {hotel.address}
+                <Typography variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "center" }}>
+                  <LocationOnIcon sx={{ mr: 1 }} /> {hotel.address}
                 </Typography>
                 {hotel.description && <Typography sx={{ my: 2 }}>{hotel.description}</Typography>}
                 {!hotel.description && <Typography sx={{ my: 2 }}>No description available</Typography>}
-                <List>
-                  {hotel.facilities.map((facility) => (
-                    <ListItem key={facility}>
-                      <ListItemIcon>
-                        <StarIcon />
-                      </ListItemIcon>
-                      <ListItemText primary={facility} />
+                <List sx={{ "& .MuiListItem-root": { padding: 0 } }}>
+                  {hotel.facilities.map((facility, index) => (
+                    <ListItem key={index} disableGutters>
+                      <ListItemIcon>{facility.icon}</ListItemIcon>
+                      <ListItemText primary={facility.text} />
                     </ListItem>
                   ))}
                 </List>
@@ -104,13 +139,11 @@ const HotelDetails = () => {
                         <Carousel showArrows={true} showThumbs={false} showIndicators={false}>
                           {room.photos.map((photo, index) => (
                             <div key={index}>
-                              <img src={photo.url_original} alt={`Room ${index + 1}`} style={{ width: "300px", height: "200px" }} /> {/* Updated line */}
+                              <img src={photo.url_original} alt={`Room ${index + 1}`} style={{ width: "300px", height: "200px" }} />
                             </div>
                           ))}
                         </Carousel>
-                        {/* <Typography>
-                          {room.type} - {room.price} per night
-                        </Typography> */}
+                        {roomPrices && roomPrices[room.room_id] && <Typography sx={{ marginTop: 1, marginBottom: 1 }}>{`Price: ${roomPrices[room.room_id].amount_rounded} per night`}</Typography>}
                         <Typography>{room.description}</Typography>
                       </Box>
                     </AccordionDetails>
