@@ -8,6 +8,7 @@ import Stays from "./pages/Stays";
 import HotelDetails from "./components/HotelDetails";
 import { SearchProvider } from "./context/SearchContext"; // Import your SearchProvider
 import StaysProvider from "./context/StaysProvider"; // Import your StaysProvider
+import Flights from "./pages/Flights";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/stays/*" element={<Stays />} />
               <Route path="/stays/:hotelName/*" element={<HotelDetails />} />
+              <Route path="/flights/*" element={<Flights />} />
             </Routes>
           </StaysProvider>
         </SearchProvider>
