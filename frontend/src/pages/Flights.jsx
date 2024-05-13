@@ -7,7 +7,6 @@ export default function Flights() {
   return (
     <>
       <Navbar />
-      <FlightSearchBar />
       <FlightsList />
     </>
   );

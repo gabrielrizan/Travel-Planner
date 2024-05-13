@@ -3,32 +3,78 @@ import { Button, TextField, MenuItem, FormControl, InputLabel, Select, Box, Circ
 import { useTheme } from "@mui/material/styles";
 import axios from "axios";
 
-const FlightSearchBar = () => {
+const FlightSearchBar = ({ onSearch }) => {
   const theme = useTheme();
   const apiKey = process.env.REACT_APP_RAPIDAPI_KEY;
-  const [from, setFrom] = useState(null); // Initially no selection
-  const [to, setTo] = useState("");
+  const [selectedFrom, setSelectedFrom] = useState(null);
+  const [selectedTo, setSelectedTo] = useState(null);
   const [tripType, setTripType] = useState("return");
   const [classType, setClassType] = useState("economy");
   const [passengers, setPassengers] = useState(1);
   const [departureDate, setDepartureDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
-  const [inputValue, setInputValue] = useState(""); // Track the input value for debouncing
-  const [autoCompleteOptions, setAutoCompleteOptions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [inputValueFrom, setInputValueFrom] = useState("");
+  const [inputValueTo, setInputValueTo] = useState("");
+  const [autoCompleteOptionsFrom, setAutoCompleteOptionsFrom] = useState([]);
+  const [autoCompleteOptionsTo, setAutoCompleteOptionsTo] = useState([]);
+  const [loadingFrom, setLoadingFrom] = useState(false);
+  const [loadingTo, setLoadingTo] = useState(false);
+  const [fromId, setFromId] = useState(null);
+  const [toId, setToId] = useState(null);
 
-  const handleFromChange = (event, newValue) => {
-    setFrom(newValue);
+  const handleSearch = () => {
+    const searchParams = {
+      fromId: fromId,
+      toId: toId,
+      departureDate: departureDate,
+      returnDate: returnDate,
+    };
+    onSearch(searchParams);
   };
 
-  const fetchAutoCompleteOptions = async (input) => {
+  const handleFromChange = (event, newValue) => {
+    setSelectedFrom(newValue);
+    setFromId(newValue.id);
+  };
+
+  const handleToChange = (event, newValue) => {
+    setSelectedTo(newValue);
+    setToId(newValue.id);
+  };
+
+  const handleTripTypeChange = (event) => {
+    setTripType(event.target.value);
+    console.log("Selected Trip Type:", event.target.value);
+  };
+
+  const handleClassTypeChange = (event) => {
+    setClassType(event.target.value);
+    console.log("Selected Class Type:", event.target.value);
+  };
+
+  const handlePassengersChange = (event) => {
+    setPassengers(event.target.value);
+    console.log("Selected Passengers:", event.target.value);
+  };
+
+  const handleDepartureDateChange = (event) => {
+    setDepartureDate(event.target.value);
+    console.log("Selected Departure Date:", event.target.value);
+  };
+
+  const handleReturnDateChange = (event) => {
+    setReturnDate(event.target.value);
+    console.log("Selected Return Date:", event.target.value);
+  };
+
+  const fetchAutoCompleteOptions = async (input, setAutoCompleteOptions, setLoading, endpoint) => {
     if (!input.trim()) {
       setAutoCompleteOptions([]);
       return;
     }
     setLoading(true);
     try {
-      const response = await axios.get("https://booking-com18.p.rapidapi.com/flights/auto-complete", {
+      const response = await axios.get(endpoint, {
         params: { query: input },
         headers: {
           "X-RapidAPI-Key": apiKey,
@@ -36,10 +82,11 @@ const FlightSearchBar = () => {
         },
       });
       const mappedOptions = response.data.data.map((item) => ({
-        id: item.id, // Unique identifier
-        label: `${item.city}, ${item.country}, ${item.cityCode}`,
+        id: item.iataCode,
+        label: `${item.city}, ${item.country}, ${item.iataCode}`,
       }));
       setAutoCompleteOptions(mappedOptions);
+      console.log("AutoComplete Options:", mappedOptions);
     } catch (error) {
       console.error("Error fetching autocomplete options:", error);
     } finally {
@@ -49,15 +96,27 @@ const FlightSearchBar = () => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (inputValue) {
-        fetchAutoCompleteOptions(inputValue);
+      if (inputValueFrom) {
+        fetchAutoCompleteOptions(inputValueFrom, setAutoCompleteOptionsFrom, setLoadingFrom, "https://booking-com18.p.rapidapi.com/flights/auto-complete");
       } else {
-        setAutoCompleteOptions([]);
+        setAutoCompleteOptionsFrom([]);
       }
     }, 1000); // Debounce delay
 
     return () => clearTimeout(timeoutId);
-  }, [inputValue]); // Effect depends on inputValue
+  }, [inputValueFrom]); // Effect depends on inputValueFrom
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (inputValueTo) {
+        fetchAutoCompleteOptions(inputValueTo, setAutoCompleteOptionsTo, setLoadingTo, "https://booking-com18.p.rapidapi.com/flights/auto-complete");
+      } else {
+        setAutoCompleteOptionsTo([]);
+      }
+    }, 1000); // Debounce delay
+
+    return () => clearTimeout(timeoutId);
+  }, [inputValueTo]); // Effect depends on inputValueTo
 
   return (
     <Box
@@ -73,7 +132,7 @@ const FlightSearchBar = () => {
     >
       <FormControl variant="outlined" sx={{ minWidth: 120 }}>
         <InputLabel id="trip-type-label">Trip Type</InputLabel>
-        <Select labelId="trip-type-label" label="Trip Type" value={tripType} onChange={(e) => setTripType(e.target.value)}>
+        <Select labelId="trip-type-label" label="Trip Type" value={tripType} onChange={handleTripTypeChange}>
           <MenuItem value="return">Return</MenuItem>
           <MenuItem value="one-way">One-Way</MenuItem>
         </Select>
@@ -81,7 +140,7 @@ const FlightSearchBar = () => {
 
       <FormControl variant="outlined" sx={{ minWidth: 120 }}>
         <InputLabel id="class-label">Class</InputLabel>
-        <Select labelId="class-label" label="Class" value={classType} onChange={(e) => setClassType(e.target.value)}>
+        <Select labelId="class-label" label="Class" value={classType} onChange={handleClassTypeChange}>
           <MenuItem value="economy">Economy</MenuItem>
           <MenuItem value="business">Business</MenuItem>
         </Select>
@@ -89,7 +148,7 @@ const FlightSearchBar = () => {
 
       <FormControl variant="outlined" sx={{ minWidth: 120 }}>
         <InputLabel id="passenger-label">Passengers</InputLabel>
-        <Select labelId="passenger-label" label="Passengers" value={passengers} onChange={(e) => setPassengers(e.target.value)}>
+        <Select labelId="passenger-label" label="Passengers" value={passengers} onChange={handlePassengersChange}>
           <MenuItem value={1}>1 Passenger</MenuItem>
           <MenuItem value={2}>2 Passengers</MenuItem>
           <MenuItem value={3}>3 Passengers</MenuItem>
@@ -99,11 +158,11 @@ const FlightSearchBar = () => {
 
       <Autocomplete
         sx={{ width: 300 }}
-        options={autoCompleteOptions}
-        loading={loading}
-        value={from}
+        options={autoCompleteOptionsFrom}
+        loading={loadingFrom}
+        value={selectedFrom}
         onChange={handleFromChange}
-        onInputChange={(event, newValue) => setInputValue(newValue)}
+        onInputChange={(event, newValue) => setInputValueFrom(newValue)}
         getOptionLabel={(option) => option.label || ""}
         renderInput={(params) => (
           <TextField
@@ -114,7 +173,7 @@ const FlightSearchBar = () => {
               ...params.InputProps,
               endAdornment: (
                 <React.Fragment>
-                  {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {loadingFrom ? <CircularProgress color="inherit" size={20} /> : null}
                   {params.InputProps.endAdornment}
                 </React.Fragment>
               ),
@@ -123,13 +182,37 @@ const FlightSearchBar = () => {
         )}
       />
 
-      <TextField label="To" variant="outlined" placeholder="City, airport, or place" value={to} onChange={(e) => setTo(e.target.value)} />
+      <Autocomplete
+        sx={{ width: 300 }}
+        options={autoCompleteOptionsTo}
+        loading={loadingTo}
+        value={selectedTo}
+        onChange={handleToChange}
+        onInputChange={(event, newValue) => setInputValueTo(newValue)}
+        getOptionLabel={(option) => option.label || ""}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="To"
+            variant="outlined"
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <React.Fragment>
+                  {loadingTo ? <CircularProgress color="inherit" size={20} /> : null}
+                  {params.InputProps.endAdornment}
+                </React.Fragment>
+              ),
+            }}
+          />
+        )}
+      />
 
-      <TextField label="Departure Date" type="date" value={departureDate} onChange={(e) => setDepartureDate(e.target.value)} InputLabelProps={{ shrink: true }} variant="outlined" />
+      <TextField label="Departure Date" type="date" value={departureDate} onChange={handleDepartureDateChange} InputLabelProps={{ shrink: true }} variant="outlined" />
 
-      <TextField label="Return Date" type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} InputLabelProps={{ shrink: true }} variant="outlined" />
+      <TextField label="Return Date" type="date" value={returnDate} onChange={handleReturnDateChange} InputLabelProps={{ shrink: true }} variant="outlined" />
 
-      <Button variant="contained" color="primary">
+      <Button variant="contained" color="primary" onClick={handleSearch}>
         Search Flights
       </Button>
     </Box>

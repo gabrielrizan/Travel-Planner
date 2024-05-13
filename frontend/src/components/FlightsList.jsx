@@ -1,45 +1,43 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FlightCard from "./FlightCard"; // Ensure you import FlightCard correctly based on your file structure
-import { Box } from "@mui/material";
+import { Container } from "@mui/material";
+import axios from "axios";
+import FlightSearchBar from "./FlightSearchBar";
 
-// Dummy flight data
-const flights = [
-  {
-    id: 1,
-    type: "Outbound",
-    from: "OTP (Coandă International)",
-    duration: "3h 05m",
-    direct: "Direct",
-    to: "AMS 6:55 pm",
-    inboundType: "Inbound",
-    inboundFrom: "AMS 9:55 pm",
-    inboundDuration: "11h 50m (1 stop)",
-    inboundTo: "OTP 10:45 am +1",
-    price: "1,130 lei",
-    lockPrice: "113 lei",
-    seatsLeft: "1 seat left at this price",
-  },
-  {
-    id: 2,
-    type: "Outbound",
-    from: "LAX (Los Angeles)",
-    duration: "11h 30m",
-    direct: "1 stop",
-    to: "NRT 9:00 am",
-    inboundType: "Inbound",
-    inboundFrom: "NRT 11:00 pm",
-    inboundDuration: "10h 45m (1 stop)",
-    inboundTo: "LAX 8:00 am +1",
-    price: "2,500 lei",
-    lockPrice: "250 lei",
-    seatsLeft: "2 seats left at this price",
-  },
-];
+const FlightsList = () => {
+  const [searchResults, setSearchResults] = useState([]);
+  const apiKey = process.env.REACT_APP_RAPIDAPI_KEY;
 
-export default function FlightsList() {
+  useEffect(() => {}, [searchResults]); // Log searchResults whenever it changes
+
+  // Function to handle flight search
+  const handleFlightSearch = async (searchParams) => {
+    try {
+      const options = {
+        method: "GET",
+        url: "https://booking-com18.p.rapidapi.com/flights/search-return",
+        params: searchParams,
+        headers: {
+          "X-RapidAPI-Key": apiKey,
+          "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
+        },
+      };
+
+      // Make API request
+      const response = await axios.request(options);
+      console.log("Flight search results:", response.data.data);
+      // Extract flight data from API response and update state
+    } catch (error) {
+      console.error("Error searching for flights:", error);
+    }
+  };
+
   return (
-    <Box sx={{ width: "100%", mt: 4 }}>
-      {flights.map((flight) => (
+    <Container sx={{ maxWidth: "100%", mt: 1 }}>
+      {/* Pass handleFlightSearch function to FlightSearchBar component */}
+      <FlightSearchBar onSearch={handleFlightSearch} />
+      {/* Display search results */}
+      {searchResults.map((flight) => (
         <FlightCard
           key={flight.id}
           type={flight.type}
@@ -56,6 +54,8 @@ export default function FlightsList() {
           seatsLeft={flight.seatsLeft}
         />
       ))}
-    </Box>
+    </Container>
   );
-}
+};
+
+export default FlightsList;
