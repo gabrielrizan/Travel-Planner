@@ -1,4 +1,23 @@
 import React, { useState } from "react";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBanSmoking } from '@fortawesome/free-solid-svg-icons';
+import { faWifi } from '@fortawesome/free-solid-svg-icons';
+import { faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
+import { faCar } from '@fortawesome/free-solid-svg-icons';
+import { faWheelchair } from '@fortawesome/free-solid-svg-icons';
+import { faVanShuttle } from '@fortawesome/free-solid-svg-icons';
+import { faUtensils } from '@fortawesome/free-solid-svg-icons';
+import { faVideo } from '@fortawesome/free-solid-svg-icons';
+import { faFireExtinguisher } from '@fortawesome/free-solid-svg-icons';
+import { faBell } from "@fortawesome/free-solid-svg-icons";
+import { faKey } from "@fortawesome/free-solid-svg-icons";
+import { faBagShopping } from "@fortawesome/free-solid-svg-icons";
+import { faShieldHalved } from "@fortawesome/free-solid-svg-icons";
+import { faElevator } from "@fortawesome/free-solid-svg-icons";
+import { faCouch } from "@fortawesome/free-solid-svg-icons";
+import { faTemperatureArrowUp , faPersonSwimming, faUmbrellaBeach, faDumbbell, faBroom, faSpa, faPaw, faJoint, faWineBottle, faVault, faVolumeXmark, faTree, faTreeCity} from "@fortawesome/free-solid-svg-icons";
+
 import {
   Container,
   Grid,
@@ -53,19 +72,65 @@ const HotelDetails = () => {
   const getFacilityIcon = (iconName) => {
     switch (iconName) {
       case "wifi":
-        return <WifiIcon />;
-      case "couch":
-        return <WeekendIcon />;
-      case "instantconf":
-        return <ShutterSpeedIcon />;
-      case "frontdesk":
-        return <ContactPhoneIcon />;
-      case "cabin_trolley":
-        return <LuggageIcon />;
-      case "concierge":
-        return <RoomServiceIcon />;
+        return <FontAwesomeIcon icon={faWifi} />;
+      case "nosmoking":
+        return <FontAwesomeIcon icon={faBanSmoking} />;
+      case "family":
+        return <FontAwesomeIcon icon={faPeopleGroup} />;
+      case "parking_sign":
+        return <FontAwesomeIcon icon={faCar} />;
+      case "disabled":
+        return <FontAwesomeIcon icon={faWheelchair} />;
+      case "shuttle":
+        return <FontAwesomeIcon icon={faVanShuttle} />;
+      case "snowflake":
+        return <FontAwesomeIcon icon={faUtensils} />;
+      case "sunglasses":
+        return <FontAwesomeIcon icon={faKey} />;
+      case "wind":
+        return <FontAwesomeIcon icon={faFireExtinguisher} />;
+      case "megaphone":
+        return <FontAwesomeIcon icon={faBell} />;
+      case "food_and_drink":
+        return <FontAwesomeIcon icon={faUtensils} />;
       case "videochat":
-        return <CameraOutdoorIcon />;
+        return <FontAwesomeIcon icon={faVideo} />;
+      case "couch":
+          return <FontAwesomeIcon icon={faCouch} />;
+      case "elevator":
+        return <FontAwesomeIcon icon={faElevator} />;
+      case "shopping_bag":
+        return <FontAwesomeIcon icon={faBagShopping} />;
+      case "videochat":
+        return <FontAwesomeIcon icon={faVideo} />;
+      case "frontdesk":
+        return <FontAwesomeIcon icon={faShieldHalved} />;
+      case "heater":
+        return <FontAwesomeIcon icon={faTemperatureArrowUp} />;
+      case "pool":
+        return <FontAwesomeIcon icon={faPersonSwimming} />;
+      case "beach":
+        return <FontAwesomeIcon icon={faUmbrellaBeach} />;
+      case "fitness":
+        return <FontAwesomeIcon icon={faDumbbell} />;
+      case "clean":
+        return <FontAwesomeIcon icon={faBroom} />;
+      case "spa":
+        return <FontAwesomeIcon icon={faSpa} />;
+      case "pawprint":
+        return <FontAwesomeIcon icon={faPaw} />;
+      case "smoking":
+        return <FontAwesomeIcon icon={faJoint} />;
+      case "wine":
+        return <FontAwesomeIcon icon={faWineBottle} />;
+      case "safe":
+        return <FontAwesomeIcon icon={faVault} />;
+      case "soundproof":
+        return <FontAwesomeIcon icon={faVolumeXmark} />;
+      case "garden":
+        return <FontAwesomeIcon icon={faTree} />;
+      case "resort":
+        return <FontAwesomeIcon icon={faTreeCity} />
     }
   };
 
