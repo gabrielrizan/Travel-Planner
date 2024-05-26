@@ -9,6 +9,7 @@ import HotelDetails from "./components/HotelDetails";
 import { SearchProvider } from "./context/SearchContext"; // Import your SearchProvider
 import StaysProvider from "./context/StaysProvider"; // Import your StaysProvider
 import Flights from "./pages/Flights";
+import CarRentals from "./pages/CarRentals";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <Route path="/stays/*" element={<Stays />} />
               <Route path="/stays/:hotelName/*" element={<HotelDetails />} />
               <Route path="/flights/*" element={<Flights />} />
+              <Route path="/car-rentals/*" element={<CarRentals />} />
             </Routes>
           </StaysProvider>
         </SearchProvider>
