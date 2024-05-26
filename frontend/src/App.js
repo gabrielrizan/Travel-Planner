@@ -1,23 +1,20 @@
 import React from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import darkTheme from "./theme/theme"; // Import the dark theme
+import { ThemeProvider } from "./context/ThemeContext"; // Import the ThemeProvider
 import HomePage from "./pages/HomePage";
 import Stays from "./pages/Stays";
 import HotelDetails from "./components/HotelDetails";
-import { SearchProvider } from "./context/SearchContext"; // Import your SearchProvider
-import StaysProvider from "./context/StaysProvider"; // Import your StaysProvider
+import { SearchProvider } from "./context/SearchContext";
+import StaysProvider from "./context/StaysProvider";
 import Flights from "./pages/Flights";
 import CarRentals from "./pages/CarRentals";
 import AuthForm from "./components/AuthForm";
-import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
+import { AuthProvider } from "./context/AuthContext";
 import SavedStays from "./components/SavedStays";
 
 function App() {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
+    <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
           <SearchProvider>
