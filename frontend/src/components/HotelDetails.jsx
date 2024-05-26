@@ -1,23 +1,35 @@
 import React, { useState } from "react";
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBanSmoking } from '@fortawesome/free-solid-svg-icons';
-import { faWifi } from '@fortawesome/free-solid-svg-icons';
-import { faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
-import { faCar } from '@fortawesome/free-solid-svg-icons';
-import { faWheelchair } from '@fortawesome/free-solid-svg-icons';
-import { faVanShuttle } from '@fortawesome/free-solid-svg-icons';
-import { faUtensils } from '@fortawesome/free-solid-svg-icons';
-import { faVideo } from '@fortawesome/free-solid-svg-icons';
-import { faFireExtinguisher } from '@fortawesome/free-solid-svg-icons';
-import { faBell } from "@fortawesome/free-solid-svg-icons";
-import { faKey } from "@fortawesome/free-solid-svg-icons";
-import { faBagShopping } from "@fortawesome/free-solid-svg-icons";
-import { faShieldHalved } from "@fortawesome/free-solid-svg-icons";
-import { faElevator } from "@fortawesome/free-solid-svg-icons";
-import { faCouch } from "@fortawesome/free-solid-svg-icons";
-import { faTemperatureArrowUp , faPersonSwimming, faUmbrellaBeach, faDumbbell, faBroom, faSpa, faPaw, faJoint, faWineBottle, faVault, faVolumeXmark, faTree, faTreeCity} from "@fortawesome/free-solid-svg-icons";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBanSmoking,
+  faWifi,
+  faPeopleGroup,
+  faCar,
+  faWheelchair,
+  faVanShuttle,
+  faUtensils,
+  faVideo,
+  faFireExtinguisher,
+  faBell,
+  faKey,
+  faBagShopping,
+  faShieldHalved,
+  faElevator,
+  faCouch,
+  faTemperatureArrowUp,
+  faPersonSwimming,
+  faUmbrellaBeach,
+  faDumbbell,
+  faBroom,
+  faSpa,
+  faPaw,
+  faJoint,
+  faWineBottle,
+  faVault,
+  faVolumeXmark,
+  faTree,
+  faTreeCity,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   Container,
   Grid,
@@ -29,34 +41,23 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider,
   ImageList,
   ImageListItem,
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Box,
-  IconButton,
+  Button,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import StarIcon from "@mui/icons-material/Star";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import WifiIcon from "@mui/icons-material/Wifi";
-import PoolIcon from "@mui/icons-material/Pool";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
-import RestaurantIcon from "@mui/icons-material/Restaurant";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Carousel } from "react-responsive-carousel"; // Import Carousel component
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import Carousel styles
-import roomImage from "../assets/room.jpeg";
+import { Star as StarIcon, LocationOn as LocationOnIcon, ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
-import RoomServiceIcon from "@mui/icons-material/RoomService";
-import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew"; // Import the icon
-import WeekendIcon from "@mui/icons-material/Weekend";
-import ShutterSpeedIcon from "@mui/icons-material/ShutterSpeed";
-import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
-import LuggageIcon from "@mui/icons-material/Luggage";
-import CameraOutdoorIcon from "@mui/icons-material/CameraOutdoor";
+import { useAuth } from "../context/AuthContext";
+import roomImage from "../assets/room.jpeg";
 
 const HotelDetails = () => {
   const location = useLocation();
@@ -68,6 +69,12 @@ const HotelDetails = () => {
   const hotelAddress = location.state?.address;
   const roomPrices = location.state?.roomPrices;
   const facilities = location.state?.facilities;
+  const { user, saveStay } = useAuth();
+
+  const [activeRoom, setActiveRoom] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const getFacilityIcon = (iconName) => {
     switch (iconName) {
@@ -96,13 +103,11 @@ const HotelDetails = () => {
       case "videochat":
         return <FontAwesomeIcon icon={faVideo} />;
       case "couch":
-          return <FontAwesomeIcon icon={faCouch} />;
+        return <FontAwesomeIcon icon={faCouch} />;
       case "elevator":
         return <FontAwesomeIcon icon={faElevator} />;
       case "shopping_bag":
         return <FontAwesomeIcon icon={faBagShopping} />;
-      case "videochat":
-        return <FontAwesomeIcon icon={faVideo} />;
       case "frontdesk":
         return <FontAwesomeIcon icon={faShieldHalved} />;
       case "heater":
@@ -130,7 +135,9 @@ const HotelDetails = () => {
       case "garden":
         return <FontAwesomeIcon icon={faTree} />;
       case "resort":
-        return <FontAwesomeIcon icon={faTreeCity} />
+        return <FontAwesomeIcon icon={faTreeCity} />;
+      default:
+        return null;
     }
   };
 
@@ -138,19 +145,59 @@ const HotelDetails = () => {
     name: hotelName,
     address: hotelAddress,
     description: hotelDescription,
-    facilities: facilities.map((facility, index) => ({
-      icon: getFacilityIcon(facility.icon), // You need to define getFacilityIcon function
+    facilities: facilities.map((facility) => ({
+      icon: getFacilityIcon(facility.icon),
       text: facility.name,
     })),
-    photos: hotelPhotos.map((photo) => `http://cf.bstatic.com${photo}`), // Use the imported image file
+    photos: hotelPhotos.map((photo) => `http://cf.bstatic.com${photo}`),
   };
 
-  // State to manage active room
-  const [activeRoom, setActiveRoom] = useState(null);
-
-  // Function to handle room selection
   const handleRoomSelect = (roomId) => {
     setActiveRoom(roomId === activeRoom ? null : roomId);
+  };
+
+  const handleSaveStay = async () => {
+    const stay = {
+      id: location.state.id,
+      name: hotelName,
+      rating: location.state.rating,
+      price: location.state.price,
+      image: image,
+      checkinDate: location.state.checkinDate,
+      checkoutDate: location.state.checkoutDate,
+    };
+
+    if (
+      stay.id !== undefined &&
+      stay.name !== undefined &&
+      stay.rating !== undefined &&
+      stay.price !== undefined &&
+      stay.image !== undefined &&
+      stay.checkinDate !== undefined &&
+      stay.checkoutDate !== undefined
+    ) {
+      const result = await saveStay(stay);
+      if (result === "success") {
+        setSnackbarMessage("Stay saved successfully!");
+        setSnackbarSeverity("success");
+      } else if (result === "exists") {
+        setSnackbarMessage("Stay already saved!");
+        setSnackbarSeverity("info");
+      } else {
+        setSnackbarMessage("Error saving stay. Please try again.");
+        setSnackbarSeverity("error");
+      }
+      setSnackbarOpen(true);
+    } else {
+      console.error("Attempted to save stay with undefined field values:", stay);
+      setSnackbarMessage("Error saving stay. Please ensure all stay details are provided.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -214,11 +261,21 @@ const HotelDetails = () => {
                     </AccordionDetails>
                   </Accordion>
                 ))}
+                {user && (
+                  <Button variant="contained" color="primary" onClick={handleSaveStay} sx={{ mt: 2 }}>
+                    Save Stay
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </Grid>
         </Grid>
       </Container>
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

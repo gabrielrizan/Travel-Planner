@@ -1,17 +1,30 @@
-// src/firebase.js
-import firebase from "firebase/app";
-import "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyALlUjBrTvoFtUuyGU5EzIp2L0CTzUt5Nc",
+  authDomain: "wadp-34c22.firebaseapp.com",
+  projectId: "wadp-34c22",
+  storageBucket: "wadp-34c22.appspot.com",
+  messagingSenderId: "230797513066",
+  appId: "1:230797513066:web:e4a7d3c698a752fc64d513",
+  measurementId: "G-C34TL03LQX",
 };
 
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
 
-export const auth = firebase.auth();
-export default firebase;
+// Initialize Firestore
+const db = getFirestore(app);
+
+// Optional: Initialize Firebase Analytics
+const analytics = getAnalytics(app);
+
+// Export the Firebase instance
+export { app, analytics, signInWithGoogle, auth, db };

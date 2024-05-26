@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/static/css/main.82719a22.css",
+    "main.js": "/static/js/main.d1332a4b.js",
+    "static/js/453.4a73b002.chunk.js": "/static/js/453.4a73b002.chunk.js",
+    "static/media/sponsor.png": "/static/media/sponsor.e8a53216e8673cd15d65.png",
+    "static/media/sibiu.jpg": "/static/media/sibiu.c63d2feb37c487d44f01.jpg",
+    "static/media/cluj.jpg": "/static/media/cluj.15d39d47666c6b7ed459.jpg",
+    "static/media/istanbul.jpg": "/static/media/istanbul.429a28bd93ba3adb4a9c.jpg",
+    "static/media/brasov.jpg": "/static/media/brasov.42acba0ec21d7166be2f.jpg",
+    "static/media/bucharest.jpg": "/static/media/bucharest.deb1677be2e7f71af942.jpg",
+    "index.html": "/index.html",
+    "main.82719a22.css.map": "/static/css/main.82719a22.css.map",
+    "main.d1332a4b.js.map": "/static/js/main.d1332a4b.js.map",
+    "453.4a73b002.chunk.js.map": "/static/js/453.4a73b002.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.82719a22.css",
+    "static/js/main.d1332a4b.js"
+  ]
+}

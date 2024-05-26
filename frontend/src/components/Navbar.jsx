@@ -11,14 +11,27 @@ import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faHotel } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { Badge } from "@mui/material";
 
 export default function ButtonAppBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [loggedIn, setLoggedIn] = React.useState(false);
+  const { isLoggedIn, user, logout, getSavedStays } = useAuth();
+  const [savedStaysCount, setSavedStaysCount] = React.useState(0);
+
   const settings = ["Profile", "Account", "Dashboard", "Logout"];
+
+  React.useEffect(() => {
+    const fetchSavedStays = async () => {
+      if (user) {
+        const stays = await getSavedStays();
+        setSavedStaysCount(stays.length);
+      }
+    };
+    fetchSavedStays();
+  }, [user, getSavedStays]);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -29,15 +42,18 @@ export default function ButtonAppBar() {
   };
 
   const handleLogin = () => {
-    setLoggedIn(true);
+    navigate("/login");
   };
 
   const handleLogout = () => {
-    setLoggedIn(false);
+    logout();
     handleCloseUserMenu();
   };
 
   const navigate = useNavigate();
+
+  console.log("isLoggedIn:", isLoggedIn);
+  console.log("User:", user);
 
   return (
     <AppBar position="static">
@@ -52,7 +68,7 @@ export default function ButtonAppBar() {
               fontFamily: "monospace",
               fontWeight: 700,
               letterSpacing: ".1rem",
-              color: "primary",
+              color: "inherit",
               textDecoration: "none",
               cursor: "pointer",
             }}
@@ -60,11 +76,26 @@ export default function ButtonAppBar() {
           >
             NeoBooking
           </Typography>
-          {loggedIn ? (
-            <Box>
+          {isLoggedIn ? (
+            <Box display="flex" alignItems="center">
+              <Button
+                color="inherit"
+                startIcon={
+                  <Badge badgeContent={savedStaysCount} color="secondary">
+                    <FontAwesomeIcon icon={faHotel} />
+                  </Badge>
+                }
+                sx={{ textTransform: "none", fontWeight: "bold", mr: 2 }}
+                onClick={() => navigate("/saved-stays")}
+              >
+                Saved Stays
+              </Button>
+              <Typography variant="body1" sx={{ mr: 2 }}>
+                {user?.email || "User"}
+              </Typography>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt={user?.name || "User"} src={user?.avatar || "/static/images/avatar/2.jpg"} />
                 </IconButton>
               </Tooltip>
               <Menu

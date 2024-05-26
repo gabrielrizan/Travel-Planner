@@ -1,16 +1,24 @@
-import React from "react";
-import { Card, CardContent, Typography, CardActions, Button, CardMedia } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Card, CardContent, Typography, CardActions, Button, CardMedia, Snackbar, Alert } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import LoadingOverlay from "./LoadingOverlay";
 
-const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }) => {
+const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate, onRemove }) => {
   const apiKey = process.env.REACT_APP_RAPIDAPI_KEY;
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, saveStay } = useAuth();
   const [description, setDescription] = useState("");
   const [photos, setPhotos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const handleSeeMore = async () => {
+    setLoading(true);
     try {
       const descriptionOptions = {
         method: "GET",
@@ -36,10 +44,7 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
         },
       };
 
-      // console.log(id);
       const photoResponse = await axios.request(photoOptions);
-      //  console.log(photoResponse);
-      //  console.log(photoResponse.data.data.data[id]);
       let imageUrls = [];
 
       photoResponse.data.data.data[id].forEach((photo) => {
@@ -64,7 +69,6 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
       let roomData = roomResponse.data.data.room_list;
       const roomPrices = {};
 
-      // Extract price for each room
       roomData.forEach((room) => {
         const roomId = room.room_id;
         const block = roomResponse.data.data.block.find((block) => block.room_id === roomId);
@@ -72,9 +76,6 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
           roomPrices[roomId] = block.product_price_breakdown.net_amount;
         }
       });
-
-      console.log(roomData);
-      console.log(roomPrices);
 
       const addressOptions = {
         method: "GET",
@@ -85,7 +86,7 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
           checkoutDate: checkoutDate,
         },
         headers: {
-          "X-RapidAPI-Key": "bbdeb2a7c5msh970fd82ef5f7d95p14ad66jsnccde857e86c8",
+          "X-RapidAPI-Key": apiKey,
           "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
         },
       };
@@ -93,8 +94,6 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
       const addressResponse = await axios.request(addressOptions);
       let address = addressResponse.data.data.address;
       let facilities = addressResponse.data.data.facilities_block.facilities;
-      console.log("Facilities: ", facilities);
-      console.log("Address: ", address);
       navigate(`/stays/${name}`, {
         state: {
           description: descriptionData.description,
@@ -107,35 +106,85 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate }
           address: address,
           roomPrices: roomPrices,
           facilities: facilities,
+          checkinDate: checkinDate,
+          checkoutDate: checkoutDate,
         },
       });
-      console.log(description);
-      // console.log(photos);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleSaveStay = async () => {
+    setLoading(true);
+    const stay = {
+      id,
+      name,
+      rating,
+      price,
+      image,
+      checkinDate,
+      checkoutDate,
+    };
+    const result = await saveStay(stay);
+    if (result === "success") {
+      setSnackbarMessage("Stay saved successfully!");
+      setSnackbarSeverity("success");
+    } else if (result === "exists") {
+      setSnackbarMessage("Stay already saved!");
+      setSnackbarSeverity("info");
+    } else {
+      setSnackbarMessage("Error saving stay. Please try again.");
+      setSnackbarSeverity("error");
+    }
+    setSnackbarOpen(true);
+    setLoading(false);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
-    <Card sx={{ maxWidth: 345, height: "100%", display: "flex", flexDirection: "column" }}>
-      <CardMedia component="img" height="140" image={image} alt={name} sx={{ objectFit: "cover" }} />
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography gutterBottom variant="h6" component="div">
-          {name}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Rating: {rating}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Price: {price}
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button size="small" onClick={handleSeeMore}>
-          See More
-        </Button>
-      </CardActions>
-    </Card>
+    <>
+      <LoadingOverlay open={loading} />
+      <Card sx={{ maxWidth: 345, height: "100%", display: "flex", flexDirection: "column" }}>
+        <CardMedia component="img" height="140" image={image} alt={name} sx={{ objectFit: "cover" }} />
+        <CardContent sx={{ flexGrow: 1 }}>
+          <Typography gutterBottom variant="h6" component="div">
+            {name}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Rating: {rating}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Price: {price}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <Button size="small" onClick={handleSeeMore}>
+            See More
+          </Button>
+          {user && location.pathname !== "/saved-stays" && (
+            <Button size="small" onClick={handleSaveStay}>
+              Save Stay
+            </Button>
+          )}
+          {location.pathname === "/saved-stays" && (
+            <Button size="small" color="secondary" onClick={() => onRemove(id)}>
+              Remove Stay
+            </Button>
+          )}
+        </CardActions>
+      </Card>
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

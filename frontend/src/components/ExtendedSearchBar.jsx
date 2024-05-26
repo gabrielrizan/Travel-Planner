@@ -8,6 +8,7 @@ import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
 import axios from "axios";
 import ApiSearch from "./ApiSearch";
+import LoadingOverlay from "./LoadingOverlay"; // Import the LoadingOverlay component
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSearchContext } from "../context/SearchContext";
 
@@ -16,6 +17,7 @@ function SearchBar({ props }) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [loading, setLoading] = useState(false); // State for loading overlay
   const { searchState, setSearchState } = useSearchContext();
   const { destinationId, dateRange, selections, searchTriggered, destinationName } = searchState;
 
@@ -91,6 +93,7 @@ function SearchBar({ props }) {
       },
     };
 
+    setLoading(true); // Show loading overlay
     try {
       const response = await axios.request(options);
 
@@ -111,6 +114,8 @@ function SearchBar({ props }) {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false); // Hide loading overlay
     }
   };
 
@@ -120,6 +125,7 @@ function SearchBar({ props }) {
 
   return (
     <Container maxWidth="xl" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <LoadingOverlay open={loading} /> {/* Add LoadingOverlay */}
       <ApiSearch onDestinationSelect={handleDestinationSelect} defaultValue={destinationName} />
       <Box position="relative" sx={{ marginRight: 0.4 }}>
         <TextField
@@ -175,7 +181,7 @@ function SearchBar({ props }) {
         <Box p={2}>
           {Object.entries(selections).map(([key, value]) => (
             <Box key={key} display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-              <Typography>{key.charAt(0).toUpperCase() + key.toUpperCase() + key.slice(1)}</Typography>
+              <Typography> {key.slice(0)}</Typography>
               <IconButton onClick={() => handleSelectionChange(key, "decrement")}>
                 <RemoveIcon />
               </IconButton>
