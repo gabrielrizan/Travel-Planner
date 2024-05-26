@@ -11,6 +11,7 @@ import CarRentals from "./pages/CarRentals";
 import AuthForm from "./components/AuthForm";
 import { AuthProvider } from "./context/AuthContext";
 import SavedStays from "./components/SavedStays";
+import AdminView from "./components/AdminView";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/car-rentals/*" element={<CarRentals />} />
                 <Route path="/login" element={<AuthForm />} />
                 <Route path="/saved-stays" element={<SavedStays />} />
+                <Route path="/admin-view" element={<AdminView />} />
               </Routes>
             </StaysProvider>
           </SearchProvider>

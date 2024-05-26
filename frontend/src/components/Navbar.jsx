@@ -16,14 +16,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Badge, Fade } from "@mui/material"; // Import the Fade component
 import { useThemeContext } from "../context/ThemeContext"; // Import the ThemeContext
-
 export default function ButtonAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { isLoggedIn, user, logout, getSavedStays } = useAuth();
   const [savedStaysCount, setSavedStaysCount] = React.useState(0);
   const { mode, toggleTheme } = useThemeContext(); // Use the ThemeContext
-
-  const settings = ["Profile", "Account", "Dashboard", "Logout"];
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const fetchSavedStays = async () => {
@@ -52,10 +50,9 @@ export default function ButtonAppBar() {
     handleCloseUserMenu();
   };
 
-  const navigate = useNavigate();
-
-  console.log("isLoggedIn:", isLoggedIn);
-  console.log("User:", user);
+  const handleAdminView = () => {
+    navigate("/admin-view");
+  };
 
   return (
     <AppBar position="static">
@@ -101,11 +98,20 @@ export default function ButtonAppBar() {
                 Saved Stays
               </Button>
               <Typography variant="body1" sx={{ mr: 2 }}>
-                {user?.displayName || "User"}
+                {user?.displayName || "ADMIN"}
               </Typography>
+              {user?.email === "admin@gmail.com" && ( // Check if the user is admin
+                <Button
+                  color="inherit"
+                  onClick={handleAdminView} // Handle admin view click
+                  sx={{ textTransform: "none", fontWeight: "bold", mr: 2 }}
+                >
+                  Admin View
+                </Button>
+              )}
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={user?.displayName || "User"} src={user?.photoURL || "/static/images/avatar/2.jpg"} />
+                  <Avatar alt={user?.displayName || "ADMIN"} src={user?.photoURL || "/static/images/avatar/2.jpg"} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -124,7 +130,7 @@ export default function ButtonAppBar() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
+                {["Profile", "Account", "Dashboard", "Logout"].map((setting) => (
                   <MenuItem key={setting} onClick={setting === "Logout" ? handleLogout : handleCloseUserMenu}>
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>

@@ -36,19 +36,21 @@ export const AuthProvider = ({ children }) => {
     if (user) {
       const userRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(userRef);
+      const stayWithUserEmail = { ...stay, userEmail: user.email }; // Include the user's email
+
       if (docSnap.exists()) {
         const savedStays = docSnap.data().savedStays || [];
         const stayExists = savedStays.some((s) => s.id === stay.id);
         if (!stayExists) {
           await updateDoc(userRef, {
-            savedStays: arrayUnion(stay),
+            savedStays: arrayUnion(stayWithUserEmail),
           });
           return "success";
         } else {
           return "exists";
         }
       } else {
-        await setDoc(userRef, { savedStays: [stay] }, { merge: true });
+        await setDoc(userRef, { savedStays: [stayWithUserEmail] }, { merge: true });
         return "success";
       }
     }
