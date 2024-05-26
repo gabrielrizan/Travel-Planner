@@ -101,11 +101,11 @@ export default function ButtonAppBar() {
                 Saved Stays
               </Button>
               <Typography variant="body1" sx={{ mr: 2 }}>
-                {user?.email || "User"}
+                {user?.displayName || "User"}
               </Typography>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={user?.name || "User"} src={user?.avatar || "/static/images/avatar/2.jpg"} />
+                  <Avatar alt={user?.displayName || "User"} src={user?.photoURL || "/static/images/avatar/2.jpg"} />
                 </IconButton>
               </Tooltip>
               <Menu
