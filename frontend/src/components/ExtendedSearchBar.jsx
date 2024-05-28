@@ -124,7 +124,7 @@ function SearchBar({ props }) {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <Container maxWidth="xl" sx={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "10px" }}>
       <LoadingOverlay open={loading} /> {/* Add LoadingOverlay */}
       <ApiSearch onDestinationSelect={handleDestinationSelect} defaultValue={destinationName} />
       <Box position="relative" sx={{ marginRight: 0.4 }}>
