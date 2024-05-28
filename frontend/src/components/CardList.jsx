@@ -21,7 +21,7 @@ const CardList = ({ hotelsData }) => {
             <HotelCard
               name={hotel.name}
               rating={hotel.reviewScore}
-              price={`${hotel.priceBreakdown.grossPrice.amountRounded} ${hotel.currency}`}
+              price={`${hotel.priceBreakdown.grossPrice.amountRounded}`}
               image={changeImageResolution(hotel.photoUrls[0], "max800")}
               id={hotel.id}
               checkinDate={hotel.checkinDate}
