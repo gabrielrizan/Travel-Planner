@@ -1,9 +1,27 @@
 import React, { useState } from "react";
-import { Card, CardContent, Typography, CardActions, Button, CardMedia, Snackbar, Alert } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  CardActions,
+  Button,
+  CardMedia,
+  Snackbar,
+  Alert,
+  Box,
+  Chip,
+  IconButton,
+  Stack,
+} from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import LoadingOverlay from "./LoadingOverlay";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import StarIcon from '@mui/icons-material/Star';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate, onRemove }) => {
   const apiKey = process.env.REACT_APP_RAPIDAPI_KEY;
@@ -47,10 +65,12 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate, 
       const photoResponse = await axios.request(photoOptions);
       let imageUrls = [];
 
-      photoResponse.data.data.data[id].forEach((photo) => {
-        let imageUrl = photo[4][25];
-        imageUrls.push(imageUrl);
-      });
+      if (photoResponse.data.data.data[id]) {
+        photoResponse.data.data.data[id].forEach((photo) => {
+          let imageUrl = photo[4][25];
+          imageUrls.push(imageUrl);
+        });
+      }
 
       const roomOptions = {
         method: "GET",
@@ -65,17 +85,22 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate, 
           "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
         },
       };
-      const roomResponse = await axios.request(roomOptions);
-      let roomData = roomResponse.data.data.room_list;
-      const roomPrices = {};
 
-      roomData.forEach((room) => {
-        const roomId = room.room_id;
-        const block = roomResponse.data.data.block.find((block) => block.room_id === roomId);
-        if (block && block.product_price_breakdown && block.product_price_breakdown.net_amount) {
-          roomPrices[roomId] = block.product_price_breakdown.net_amount;
-        }
-      });
+      const roomResponse = await axios.request(roomOptions);
+      let roomData = [];
+      let roomPrices = {};
+
+      if (roomResponse.data.data && roomResponse.data.data.room_list) {
+        roomData = roomResponse.data.data.room_list;
+
+        roomData.forEach((room) => {
+          const roomId = room.room_id;
+          const block = roomResponse.data.data.block.find((block) => block.room_id === roomId);
+          if (block && block.product_price_breakdown && block.product_price_breakdown.net_amount) {
+            roomPrices[roomId] = block.product_price_breakdown.net_amount;
+          }
+        });
+      }
 
       const addressOptions = {
         method: "GET",
@@ -93,7 +118,8 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate, 
 
       const addressResponse = await axios.request(addressOptions);
       let address = addressResponse.data.data.address;
-      let facilities = addressResponse.data.data.facilities_block.facilities;
+      let facilities = addressResponse.data.data.facilities_block.facilities || [];
+
       navigate(`/stays/${name}`, {
         state: {
           description: descriptionData.description,
@@ -150,37 +176,138 @@ const HotelCard = ({ name, rating, price, image, id, checkinDate, checkoutDate, 
   return (
     <>
       <LoadingOverlay open={loading} />
-      <Card sx={{ maxWidth: 345, height: "100%", display: "flex", flexDirection: "column" }}>
-        <CardMedia component="img" height="140" image={image} alt={name} sx={{ objectFit: "cover" }} />
-        <CardContent sx={{ flexGrow: 1 }}>
-          <Typography gutterBottom variant="h6" component="div">
+      <Card 
+        sx={{ 
+          maxWidth: 345,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          position: "relative",
+          transition: "transform 0.2s ease-in-out",
+          "&:hover": {
+            transform: "translateY(-4px)",
+            boxShadow: (theme) => theme.shadows[8],
+          },
+        }}
+      >
+        <CardMedia
+          component="img"
+          height="200"
+          image={image}
+          alt={name}
+          sx={{ 
+            objectFit: "cover",
+          }}
+        />
+        
+        {/* Rating chip overlaid on image */}
+        <Chip
+          icon={<StarIcon sx={{ color: "white" }} />}
+          label={rating}
+          sx={{
+            position: "absolute",
+            top: 12,
+            right: 12,
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            color: "white",
+            '& .MuiChip-icon': {
+              color: '#FFD700',
+            },
+          }}
+        />
+
+        <CardContent sx={{ flexGrow: 1, pt: 2 }}>
+          <Typography 
+            gutterBottom 
+            variant="h6" 
+            component="div"
+            sx={{ 
+              fontWeight: 600,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+            }}
+          >
             {name}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Rating: {rating}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Price: {price}
+
+          <Typography 
+            variant="h6" 
+            color="primary" 
+            sx={{ 
+              fontWeight: 600,
+              mt: 1 
+            }}
+          >
+            {price}
           </Typography>
         </CardContent>
-        <CardActions>
-          <Button size="small" onClick={handleSeeMore}>
-            See More
-          </Button>
-          {user && location.pathname !== "/saved-stays" && (
-            <Button size="small" onClick={handleSaveStay}>
-              Save Stay
+
+        <CardActions sx={{ padding: 2, pt: 0 }}>
+          <Stack 
+            direction="row" 
+            spacing={1} 
+            sx={{ 
+              width: '100%',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Button 
+              variant="contained"
+              endIcon={<ArrowForwardIcon />}
+              onClick={handleSeeMore}
+              sx={{
+                flexGrow: 1,
+                borderRadius: 2,
+              }}
+            >
+              See More
             </Button>
-          )}
-          {location.pathname === "/saved-stays" && (
-            <Button size="small" color="secondary" onClick={() => onRemove(id)}>
-              Remove Stay
-            </Button>
-          )}
+            
+            {user && location.pathname !== "/saved-stays" && (
+              <IconButton 
+                onClick={handleSaveStay}
+                sx={{ 
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                }}
+              >
+                <FavoriteBorderIcon />
+              </IconButton>
+            )}
+            
+            {location.pathname === "/saved-stays" && (
+              <IconButton 
+                onClick={() => onRemove(id)}
+                color="error"
+                sx={{ 
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                }}
+              >
+                <DeleteOutlineIcon />
+              </IconButton>
+            )}
+          </Stack>
         </CardActions>
       </Card>
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
+
+      <Snackbar 
+        open={snackbarOpen} 
+        autoHideDuration={6000} 
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleSnackbarClose} 
+          severity={snackbarSeverity} 
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

@@ -19,7 +19,6 @@ function HomePage() {
   return (
     <>
       <Navbar />
-      <SecondNavbar />
       <Header />
       <ExtendedSearchBar props={handleHotelsData} />
       <Trending />

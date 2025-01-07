@@ -1,27 +1,18 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faHotel, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
+import React, { useState } from "react";
+import { AppBar, Box, Toolbar, Typography, Button, IconButton, Menu, MenuItem, Container, Avatar, Badge, Tooltip, Divider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Badge, Fade } from "@mui/material"; // Import the Fade component
-import { useThemeContext } from "../context/ThemeContext"; // Import the ThemeContext
-export default function ButtonAppBar() {
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { isLoggedIn, user, logout, getSavedStays } = useAuth();
-  const [savedStaysCount, setSavedStaysCount] = React.useState(0);
-  const { mode, toggleTheme } = useThemeContext(); // Use the ThemeContext
+import { useThemeContext } from "../context/ThemeContext";
+import { Brightness4 as DarkIcon, Brightness7 as LightIcon, AccountCircle, Logout, Settings, Dashboard } from "@mui/icons-material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBed, faPlane, faCar, faBuilding, faHeart } from "@fortawesome/free-solid-svg-icons";
+
+const Navbar = () => {
   const navigate = useNavigate();
+  const { isLoggedIn, user, logout, getSavedStays } = useAuth();
+  const { mode, toggleTheme } = useThemeContext();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [savedStaysCount, setSavedStaysCount] = useState(0);
 
   React.useEffect(() => {
     const fetchSavedStays = async () => {
@@ -33,118 +24,113 @@ export default function ButtonAppBar() {
     fetchSavedStays();
   }, [user, getSavedStays]);
 
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
-  const handleLogin = () => {
-    navigate("/login");
-  };
-
-  const handleLogout = () => {
-    logout();
-    handleCloseUserMenu();
-  };
-
-  const handleAdminView = () => {
-    navigate("/admin-view");
+  const handleLogout = async () => {
+    await logout();
+    handleClose();
+    navigate("/");
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky" color="default">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
-            variant="h5"
+            variant="h6"
             noWrap
+            component="a"
+            href="/"
             sx={{
               mr: 2,
-              flexGrow: 1,
               fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: ".1rem",
+              letterSpacing: ".2rem",
               color: "inherit",
               textDecoration: "none",
-              cursor: "pointer",
             }}
-            onClick={() => navigate("/")}
           >
             NeoBooking
           </Typography>
-          <IconButton onClick={toggleTheme} color="inherit">
-            <Fade in={mode === "dark"} timeout={300}>
-              <FontAwesomeIcon icon={faSun} />
-            </Fade>
-            <Fade in={mode === "light"} timeout={300}>
-              <FontAwesomeIcon icon={faMoon} />
-            </Fade>
-          </IconButton>
-          {isLoggedIn ? (
-            <Box display="flex" alignItems="center">
-              <Button
-                color="inherit"
-                startIcon={
-                  <Badge badgeContent={savedStaysCount} color="secondary">
-                    <FontAwesomeIcon icon={faHotel} />
-                  </Badge>
-                }
-                sx={{ textTransform: "none", fontWeight: "bold", mr: 2 }}
-                onClick={() => navigate("/saved-stays")}
-              >
-                Saved Stays
-              </Button>
-              <Typography variant="body1" sx={{ mr: 2 }}>
-                {user?.displayName || "ADMIN"}
-              </Typography>
-              {user?.email === "admin@gmail.com" && ( // Check if the user is admin
-                <Button
-                  color="inherit"
-                  onClick={handleAdminView} // Handle admin view click
-                  sx={{ textTransform: "none", fontWeight: "bold", mr: 2 }}
-                >
-                  Admin View
-                </Button>
-              )}
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={user?.displayName || "ADMIN"} src={user?.photoURL || "/static/images/avatar/2.jpg"} />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {["Profile", "Account", "Dashboard", "Logout"].map((setting) => (
-                  <MenuItem key={setting} onClick={setting === "Logout" ? handleLogout : handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-          ) : (
-            <Button color="inherit" onClick={handleLogin}>
-              Login
-              <FontAwesomeIcon icon={faUser} style={{ marginLeft: "8px" }} />
+
+          <Box sx={{ flexGrow: 1, display: "flex", gap: 2 }}>
+            <Button color="inherit" startIcon={<FontAwesomeIcon icon={faBed} />} onClick={() => navigate("/stays")}>
+              Stays
             </Button>
-          )}
+            <Button color="inherit" startIcon={<FontAwesomeIcon icon={faPlane} />} onClick={() => navigate("/flights")}>
+              Flights
+            </Button>
+            <Button color="inherit" startIcon={<FontAwesomeIcon icon={faCar} />} onClick={() => navigate("/car-rentals")}>
+              Car Rentals
+            </Button>
+            <Button color="inherit" startIcon={<FontAwesomeIcon icon={faBuilding} />} onClick={() => navigate("/attractions")}>
+              Attractions
+            </Button>
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <IconButton onClick={toggleTheme} color="inherit">
+              {mode === "dark" ? <LightIcon /> : <DarkIcon />}
+            </IconButton>
+
+            {isLoggedIn ? (
+              <>
+                <Badge badgeContent={savedStaysCount} color="primary">
+                  <IconButton color="inherit" onClick={() => navigate("/saved-stays")}>
+                    <FontAwesomeIcon icon={faHeart} />
+                  </IconButton>
+                </Badge>
+
+                <Tooltip title="Account settings">
+                  <IconButton onClick={handleMenu} color="inherit">
+                    <Avatar sx={{ width: 32, height: 32 }}>{user?.email?.charAt(0).toUpperCase()}</Avatar>
+                  </IconButton>
+                </Tooltip>
+
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: "visible",
+                      filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                      mt: 1.5,
+                    },
+                  }}
+                >
+                  <MenuItem onClick={handleClose}>
+                    <AccountCircle sx={{ mr: 2 }} /> Profile
+                  </MenuItem>
+                  <MenuItem onClick={handleClose}>
+                    <Settings sx={{ mr: 2 }} /> Settings
+                  </MenuItem>
+                  <MenuItem onClick={() => navigate("/admin")}>
+                    <Dashboard sx={{ mr: 2 }} /> Dashboard
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleLogout}>
+                    <Logout sx={{ mr: 2 }} /> Logout
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Button variant="outlined" onClick={() => navigate("/login")}>
+                Login
+              </Button>
+            )}
+          </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
-}
+};
+
+export default Navbar;
