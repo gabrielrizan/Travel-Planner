@@ -13,6 +13,8 @@ import { AuthProvider } from "./context/AuthContext";
 import SavedStays from "./components/SavedStays";
 import AdminView from "./components/AdminView";
 import AdminRoute from "./components/AdminRoute";
+import Checkout from "./components/Checkout";
+import OrderHistory from "./components/OrderHistory";
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
                 <Route path="/car-rentals/*" element={<CarRentals />} />
                 <Route path="/login" element={<AuthForm />} />
                 <Route path="/saved-stays" element={<SavedStays />} />
+                <Route path="/checkout/:stayId" element={<Checkout />} />
+                <Route path="/orders" element={<OrderHistory />} />
                 <Route
                   path="/admin-view"
                   element={

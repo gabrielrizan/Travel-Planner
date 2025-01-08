@@ -155,6 +155,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const buyStay = async (orderDetails) => {
+    if (!user) return "error";
+    try {
+      const orderRef = doc(collection(db, "orders"));
+      await setDoc(orderRef, {
+        ...orderDetails,
+        userId: user.uid,
+        userEmail: user.email,
+        createdAt: new Date().toISOString(),
+        status: "Pending", // Initial status of the order
+      });
+      return "success";
+    } catch (error) {
+      console.error("Error creating order:", error);
+      return "error";
+    }
+  };
+
   const removeUserStay = async (userUid, stayId) => {
     try {
       const userRef = doc(db, "users", userUid);
@@ -191,6 +209,7 @@ export const AuthProvider = ({ children }) => {
         getSavedStays,
         getAllUserStays,
         removeUserStay,
+        buyStay,
       }}
     >
       {children}
