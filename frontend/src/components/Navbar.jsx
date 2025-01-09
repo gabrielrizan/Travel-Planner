@@ -3,13 +3,13 @@ import { AppBar, Box, Toolbar, Typography, Button, IconButton, Menu, MenuItem, C
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useThemeContext } from "../context/ThemeContext";
-import { Brightness4 as DarkIcon, Brightness7 as LightIcon, AccountCircle, Logout, Settings, Dashboard } from "@mui/icons-material";
+import { Brightness4 as DarkIcon, Brightness7 as LightIcon, AccountCircle, Logout, Settings, Dashboard, Hotel as HotelIcon, Warning as WarningIcon } from "@mui/icons-material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBed, faPlane, faCar, faBuilding, faHeart } from "@fortawesome/free-solid-svg-icons";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, user, logout, getSavedStays } = useAuth();
+  const { isLoggedIn, user, logout, getSavedStays, isAdmin } = useAuth(); // Added isAdmin
   const { mode, toggleTheme } = useThemeContext();
   const [anchorEl, setAnchorEl] = useState(null);
   const [savedStaysCount, setSavedStaysCount] = useState(0);
@@ -87,6 +87,12 @@ const Navbar = () => {
                   </IconButton>
                 </Badge>
 
+                <Badge color="secondary">
+                  <IconButton color="inherit" onClick={() => navigate("/orders")}>
+                    <FontAwesomeIcon icon={faBuilding} />
+                  </IconButton>
+                </Badge>
+
                 <Tooltip title="Account settings">
                   <IconButton onClick={handleMenu} color="inherit">
                     <Avatar sx={{ width: 32, height: 32 }}>{user?.email?.charAt(0).toUpperCase()}</Avatar>
@@ -115,6 +121,17 @@ const Navbar = () => {
                   <MenuItem onClick={() => navigate("/admin")}>
                     <Dashboard sx={{ mr: 2 }} /> Dashboard
                   </MenuItem>
+                  {isAdmin && (
+                    <>
+                      <Divider />
+                      <MenuItem onClick={() => navigate("/admin-view?tab=stays")}>
+                        <HotelIcon sx={{ mr: 2 }} /> View All Saved Stays
+                      </MenuItem>
+                      <MenuItem onClick={() => navigate("/admin-view?tab=orders")}>
+                        <WarningIcon sx={{ mr: 2 }} /> View All Orders
+                      </MenuItem>
+                    </>
+                  )}
                   <Divider />
                   <MenuItem onClick={handleLogout}>
                     <Logout sx={{ mr: 2 }} /> Logout

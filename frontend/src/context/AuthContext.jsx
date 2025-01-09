@@ -173,6 +173,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const getAllUserOrders = async () => {
+    try {
+      const ordersSnapshot = await getDocs(collection(db, "orders"));
+      const allOrders = ordersSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return allOrders;
+    } catch (error) {
+      console.error("Error fetching all orders:", error);
+      return [];
+    }
+  };
+
   const removeUserStay = async (userUid, stayId) => {
     try {
       const userRef = doc(db, "users", userUid);
@@ -210,6 +224,7 @@ export const AuthProvider = ({ children }) => {
         getAllUserStays,
         removeUserStay,
         buyStay,
+        getAllUserOrders,
       }}
     >
       {children}

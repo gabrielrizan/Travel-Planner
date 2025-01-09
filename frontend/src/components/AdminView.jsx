@@ -21,7 +21,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { Delete as DeleteIcon, Person as PersonIcon, Hotel as HotelIcon, Warning as WarningIcon } from "@mui/icons-material";
+import { Delete as DeleteIcon, Person as PersonIcon, Hotel as HotelIcon, ShoppingCart } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "./Navbar";
@@ -35,9 +35,10 @@ function TabPanel({ children, value, index }) {
 }
 
 const AdminView = () => {
-  const { isAdmin, getAllUserStays, removeUserStay } = useAuth();
+  const { isAdmin, getAllUserStays, getAllUserOrders, removeUserStay } = useAuth();
   const [value, setValue] = useState(0);
   const [userData, setUserData] = useState([]);
+  const [ordersData, setOrdersData] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -60,6 +61,9 @@ const AdminView = () => {
       try {
         // Retrieve all stays for all users
         const stays = await getAllUserStays();
+        // Retrieve all orders for all users
+        const orders = await getAllUserOrders();
+
         // Group stays by user UID
         const userMap = stays.reduce((acc, stay) => {
           if (!acc[stay.userUid]) {
@@ -74,6 +78,7 @@ const AdminView = () => {
         }, {});
 
         setUserData(Object.values(userMap)); // Convert object map to array
+        setOrdersData(orders); // Set orders data
       } catch (error) {
         console.error("Error fetching data:", error);
         setSnackbar({
@@ -85,7 +90,7 @@ const AdminView = () => {
     };
 
     fetchData();
-  }, [isAdmin, navigate, getAllUserStays]);
+  }, [isAdmin, navigate, getAllUserStays, getAllUserOrders]);
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -147,6 +152,7 @@ const AdminView = () => {
             <Tabs value={value} onChange={handleTabChange}>
               <Tab icon={<PersonIcon />} label="Users Overview" />
               <Tab icon={<HotelIcon />} label="All Bookings" />
+              <Tab icon={<ShoppingCart />} label="All Orders" />
             </Tabs>
           </Box>
 
@@ -204,9 +210,6 @@ const AdminView = () => {
                         <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
                           {stay.price}
                         </Typography>
-                        <IconButton color="error" onClick={() => handleDeleteStay(userObj.userUid, stay)} sx={{ mt: 1 }}>
-                          <DeleteIcon />
-                        </IconButton>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -214,22 +217,31 @@ const AdminView = () => {
               )}
             </Grid>
           </TabPanel>
-        </Paper>
 
-        {/* Delete confirmation dialog */}
-        <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, stay: null, userUid: null })}>
-          <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <WarningIcon color="warning" />
-            Confirm Deletion
-          </DialogTitle>
-          <DialogContent>Are you sure you want to remove this booking?</DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDeleteDialog({ open: false, stay: null, userUid: null })}>Cancel</Button>
-            <Button onClick={confirmDelete} color="error" variant="contained">
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
+          {/* Tab 3: All Orders */}
+          <TabPanel value={value} index={2}>
+            <Grid container spacing={3}>
+              {ordersData.map((order) => (
+                <Grid item xs={12} md={6} lg={4} key={order.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        {order.stayName}
+                      </Typography>
+                      <Typography color="textSecondary" gutterBottom>
+                        Ordered by: {order.userEmail}
+                      </Typography>
+                      <Typography variant="body2">Check-in: {order.checkinDate}</Typography>
+                      <Typography variant="body2">Check-out: {order.checkoutDate}</Typography>
+                      <Typography variant="body2">Price: {order.price}</Typography>
+                      <Typography variant="body2">Status: {order.status}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </TabPanel>
+        </Paper>
 
         {/* Snackbar notifications */}
         <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}>
