@@ -202,7 +202,7 @@ const AdminView = () => {
                         <Typography variant="body2">Check-in: {stay.checkinDate}</Typography>
                         <Typography variant="body2">Check-out: {stay.checkoutDate}</Typography>
                         <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
-                          {stay.price} RON
+                          {stay.price}
                         </Typography>
                         <IconButton color="error" onClick={() => handleDeleteStay(userObj.userUid, stay)} sx={{ mt: 1 }}>
                           <DeleteIcon />

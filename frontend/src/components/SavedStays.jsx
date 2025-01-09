@@ -176,10 +176,10 @@ const SavedStays = () => {
 
                     <Box sx={{ mt: "auto", pt: 2 }}>
                       <Typography variant="caption" color="text.secondary" display="block">
-                        Price per night
+                        Price in total
                       </Typography>
                       <Typography variant="h6" color="primary" sx={{ fontWeight: "bold" }}>
-                        {stay.price.replace("USD", "RON")} RON
+                        {stay.price}
                       </Typography>
                     </Box>
 

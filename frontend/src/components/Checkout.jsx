@@ -80,7 +80,7 @@ const Checkout = () => {
               Check-out: {stay.checkoutDate}
             </Typography>
             <Typography variant="h6" color="primary" gutterBottom>
-              Price: {stay.price.replace("USD", "RON")} RON
+              Price: {stay.price}
             </Typography>
           </CardContent>
         </Card>
@@ -88,36 +88,16 @@ const Checkout = () => {
         <Typography variant="h6" gutterBottom>
           Guest Details
         </Typography>
-        <TextField
-          label="Guest Name"
-          fullWidth
-          margin="normal"
-          value={guestName}
-          onChange={(e) => setGuestName(e.target.value)}
-        />
-        <TextField
-          label="Contact Information"
-          fullWidth
-          margin="normal"
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
-        />
+        <TextField label="Guest Name" fullWidth margin="normal" value={guestName} onChange={(e) => setGuestName(e.target.value)} />
+        <TextField label="Contact Information" fullWidth margin="normal" value={contact} onChange={(e) => setContact(e.target.value)} />
         <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
           <Button variant="contained" color="primary" onClick={handleConfirmPurchase}>
             Confirm Purchase
           </Button>
         </Box>
 
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.severity}
-            sx={{ width: "100%" }}
-          >
+        <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+          <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: "100%" }}>
             {snackbar.message}
           </Alert>
         </Snackbar>
